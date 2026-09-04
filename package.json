@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "format": "prettier --write index.html src/"
+    "format": "prettier --write index.html vite.config.js src/"
   },
   "devDependencies": {
     "prettier": "^3.9.6",
