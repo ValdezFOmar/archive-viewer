@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ZIP Archive Viewer</title>
+  </head>
+
+  <body>
+    <main>
+      <h1><a href="/">ZIP Archive Viewer</a></h1>
+      <form id="view-form">
+        <div>
+          <label for="url">URL</label>
+          <input
+            type="text"
+            name="url"
+            id="url"
+            size="100"
+            pattern="https?://.*"
+            placeholder="https://example.com/archive.zip"
+            required
+          />
+        </div>
+        <button id="view-button" type="submit">view</button>
+      </form>
+      <section id="archive-view" hidden>
+        <h2>Archive contents</h2>
+        <div class="archive-content">
+          <p id="archive-details"></p>
+          <ul id="archive-entries"></ul>
+        </div>
+        <template id="archive-entry-template">
+          <li class="archive-entry">
+            <div>
+              <span class="file-name"></span>
+            </div>
+          </li>
+        </template>
+      </section>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

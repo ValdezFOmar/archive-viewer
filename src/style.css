@@ -1,0 +1,65 @@
+html {
+  /* resets */
+  box-sizing: border-box;
+  font-family: sans-serif;
+  /* styling */
+  color: #ccccff;
+  background-color: black;
+}
+
+*,
+*::before,
+*::after {
+  /* resets */
+  box-sizing: inherit;
+  font-family: inherit;
+  padding: unset;
+  /* styling */
+  color: inherit;
+  background-color: inherit;
+}
+
+li {
+  margin-bottom: 0.5em;
+  list-style: unset;
+}
+
+img,
+video {
+  max-width: 100%;
+  object-fit: contain;
+}
+
+/* General styles */
+
+button {
+  font-size: inherit;
+  max-width: 100%;
+}
+
+input {
+  font-size: 1.2em;
+  font-family: monospace;
+  max-width: 100%;
+}
+
+pre {
+  overflow: auto;
+  font-size: 1.2em;
+  font-family: monospace;
+}
+
+details {
+  color: #7777bb;
+}
+
+/* Classes */
+
+.file-name {
+  font-size: 1.2em;
+  font-family: monospace;
+}
+
+.archive-entry div {
+  padding-block: 0.2em;
+}

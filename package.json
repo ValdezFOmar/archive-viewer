@@ -1,0 +1,26 @@
+{
+  "name": "archive-viewer",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "format": "prettier --write index.html src/"
+  },
+  "devDependencies": {
+    "prettier": "^3.9.6",
+    "typescript": "~6.0.2",
+    "@typescript/lib-dom": "npm:@types/web",
+    "vite": "^8.2.2"
+  },
+  "dependencies": {
+    "@csstools/normalize.css": "^12.1.1",
+    "@zip.js/zip.js": "^2.9.0"
+  },
+  "prettier": {
+    "singleQuote": true,
+    "arrowParens": "avoid"
+  }
+}
