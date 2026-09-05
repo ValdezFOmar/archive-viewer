@@ -26,10 +26,10 @@ document.getElementById('view-form')!.addEventListener('submit', async event => 
     event.preventDefault();
 
     const input = document.getElementById('url') as HTMLInputElement;
+    const button = document.getElementById('view-button') as HTMLButtonElement;
     const archiveView = document.getElementById('archive-view')!;
     const archiveDetails = document.getElementById('archive-details')!;
     const archiveEntries = document.getElementById('archive-entries')!;
-    const template = document.getElementById('archive-entry-template') as HTMLTemplateElement;
 
     const archiveUrl = input.value;
     const httpReader = new HttpReader(archiveUrl);
@@ -37,11 +37,16 @@ document.getElementById('view-form')!.addEventListener('submit', async event => 
 
     let entries: Entry[];
     try {
+        input.disabled = true;
+        button.disabled = true;
         entries = await zipReader.getEntries();
     } catch (error) {
         alert('Could not preview file');
         console.debug(error);
         return;
+    } finally {
+        input.disabled = false;
+        button.disabled = false;
     }
 
     entries.sort((entry1, entry2) => {
@@ -57,37 +62,41 @@ document.getElementById('view-form')!.addEventListener('submit', async event => 
     }
     archiveEntries.replaceChildren();
 
+    const entryTemplate = document.querySelector<HTMLTemplateElement>('#t-archive-entry')!;
+    const textTemplate = document.querySelector<HTMLTemplateElement>('#t-archive-entry-text')!;
+    const imageTemplate = document.querySelector<HTMLTemplateElement>('#t-archive-entry-image')!;
+
     let fileCount = 0;
     for (const entry of entries) {
-        const clone = document.importNode(template.content, true);
-        const parent = clone.querySelector('.archive-entry')!;
+        const clone = document.importNode(entryTemplate.content, true);
+        const container = clone.querySelector('li')!;
+        const pathContainer = clone.querySelector<HTMLElement>('.file-path')!;
+        const filePath = entry.filename;
+        pathContainer.textContent = filePath;
 
         if (!entry.directory) {
             fileCount++;
+            if (/\.(txt|py|md|json|csv|xml|html)$/.test(filePath)) {
+                const fragment = document.importNode(textTemplate.content, true);
+                const pre = fragment.querySelector('pre')!;
+                const text = await entry.getData(new TextWriter());
+                if (text !== '') {
+                    pre.textContent = await entry.getData(new TextWriter());
+                    pathContainer.parentElement?.append(fragment);
+                }
+            } else if (/\.(png|jpg|jpeg|gif)$/.test(filePath)) {
+                const fragment = document.importNode(imageTemplate.content, true);
+                const img = fragment.querySelector('img')!;
+                const blob = await entry.getData(new BlobWriter());
+                img.src = URL.createObjectURL(blob);
+                container.append(fragment);
+            }
         }
 
-        if (!entry.directory && /\.(txt|py|md|json|csv|xml|html)$/.test(entry.filename)) {
-            const details = document.createElement('details');
-            const pre = document.createElement('pre');
-            pre.innerText = await entry.getData(new TextWriter());
-            details.append(pre);
-            parent.append(details);
-        } else if (!entry.directory && /\.(png|jpg|jpeg|gif)$/.test(entry.filename)) {
-            const img = document.createElement('img');
-            const blob = await entry.getData(new BlobWriter());
-            img.src = URL.createObjectURL(blob);
-            parent.append(img);
-        }
-
-        const fileName = clone.querySelector<HTMLElement>('.file-name')!;
-        fileName.innerText = entry.filename;
-        if (entry.directory) {
-            fileName.insertAdjacentText('afterend', ' (directory)');
-        }
         archiveEntries.append(clone);
     }
 
-    archiveDetails.textContent = `Entries: ${entries.length} (${fileCount} Files); Size: ${formatFileSize(httpReader.size)}`;
+    archiveDetails.textContent = `Files: ${fileCount}; Size: ${formatFileSize(httpReader.size)}`;
     archiveView.hidden = false;
 
     const url = new URL(window.location.href);
