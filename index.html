@@ -1,45 +1,89 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="bg-zinc-900 text-zinc-200">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="stylesheet" href="/src/style.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ZIP Archive Viewer</title>
   </head>
 
-  <body>
-    <main>
-      <h1><a href="/">ZIP Archive Viewer</a></h1>
-      <form id="view-form">
-        <div>
-          <label for="url">URL</label>
-          <input
-            type="text"
-            name="url"
-            id="url"
-            size="100"
-            pattern="https?://.*"
-            placeholder="https://example.com/archive.zip"
-            required
-          />
-        </div>
-        <button id="view-button" type="submit">view</button>
-      </form>
-      <section id="archive-view" hidden>
+  <body class="flex min-h-dvh flex-col px-2">
+    <header class="py-3">
+      <h1 class="text-center font-mono text-2xl font-bold text-emerald-400">
+        ZIP Archive Viewer
+      </h1>
+    </header>
+    <main class="grow">
+      <section class="px-2 pb-4">
+        <form id="view-form">
+          <label
+            for="url"
+            class="block pb-0.5 text-center text-sm text-zinc-400"
+            >Archive URL</label
+          >
+          <div class="flex gap-2">
+            <input
+              type="text"
+              name="url"
+              id="url"
+              pattern="https?://.*"
+              placeholder="https://example.com/archive.zip"
+              required
+              class="grow rounded-xl px-2 py-0.5 outline-1 outline-zinc-500 focus:outline-2 focus:outline-emerald-400"
+            />
+            <button
+              id="view-button"
+              form="view-form"
+              type="submit"
+              class="flex-none rounded-2xl bg-emerald-400 p-0.5 text-zinc-900"
+            >
+              view
+            </button>
+          </div>
+        </form>
+      </section>
+      <section id="archive-view">
         <h2>Archive contents</h2>
-        <div class="archive-content">
-          <p id="archive-details"></p>
-          <ul id="archive-entries"></ul>
+        <div id="archive-content">
+          <section>
+            <h3>Details</h3>
+            <p id="archive-details"></p>
+          </section>
+          <section>
+            <h3>Entries</h3>
+            <ul id="archive-entries">
+            </ul>
+            <template id="archive-entry-template">
+              <li class="archive-entry">
+                <div>
+                  <span class="file-name"></span>
+                </div>
+              </li>
+            </template>
+          </section>
         </div>
-        <template id="archive-entry-template">
-          <li class="archive-entry">
-            <div>
-              <span class="file-name"></span>
-            </div>
-          </li>
-        </template>
       </section>
     </main>
+    <address class="flex-none pt-8 pb-2 text-zinc-500">
+      <div class="flex justify-center gap-6">
+        <a
+          href="https://github.com/ValdezFOmar"
+          rel="author"
+          target="_blank"
+          class="underline hover:text-emerald-400"
+        >
+          author
+        </a>
+        <a
+          href="https://github.com/ValdezFOmar/archive-viewer"
+          target="_blank"
+          class="underline hover:text-emerald-400"
+        >
+          source
+        </a>
+      </div>
+    </address>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

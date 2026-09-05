@@ -10,17 +10,23 @@
     "format": "prettier --write index.html vite.config.js src/"
   },
   "devDependencies": {
-    "prettier": "^3.9.6",
-    "typescript": "~6.0.2",
     "@typescript/lib-dom": "npm:@types/web",
+    "prettier": "^3.9.6",
+    "prettier-plugin-tailwindcss": "^0.8.1",
+    "typescript": "~6.0.2",
     "vite": "^8.2.2"
   },
   "dependencies": {
-    "@csstools/normalize.css": "^12.1.1",
-    "@zip.js/zip.js": "^2.9.0"
+    "@tailwindcss/vite": "^4.3.3",
+    "@zip.js/zip.js": "^2.9.0",
+    "tailwindcss": "^4.3.3"
   },
   "prettier": {
     "singleQuote": true,
-    "arrowParens": "avoid"
+    "arrowParens": "avoid",
+    "tailwindStylesheet": "./src/style.css",
+    "plugins": [
+      "prettier-plugin-tailwindcss"
+    ]
   }
 }

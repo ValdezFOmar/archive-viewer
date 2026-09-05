@@ -1,5 +1,3 @@
-import '@csstools/normalize.css';
-import './style.css';
 import { BlobWriter, HttpReader, TextWriter, ZipReader, type Entry } from '@zip.js/zip.js';
 
 function splitFileName(filename: string): [string, string] {
