@@ -24,8 +24,9 @@
           <label
             for="url"
             class="block pb-0.5 text-center text-sm text-zinc-400"
-            >Archive URL</label
           >
+            Archive URL
+          </label>
           <div class="flex">
             <input
               type="text"
@@ -34,13 +35,13 @@
               pattern="https?://.*"
               placeholder="https://example.com/archive.zip"
               required
-              class="grow rounded-l-lg border border-r-0 border-zinc-500 px-2 py-0.5 focus:outline-1 focus:outline-emerald-400"
+              class="grow rounded-l-lg border border-r-0 border-zinc-500 px-2 py-0.5 focus:outline-1 focus:outline-emerald-400 disabled:text-zinc-500"
             />
             <button
               id="view-button"
               form="view-form"
               type="submit"
-              class="flex-none rounded-r-lg bg-emerald-400 p-1 text-zinc-900 hover:bg-emerald-200 focus:bg-emerald-200 disabled:bg-emerald-600"
+              class="flex-none rounded-r-lg bg-emerald-400 p-1 text-zinc-900 hover:bg-emerald-600 focus:bg-emerald-600 disabled:bg-zinc-500"
             >
               <span class="flex items-center justify-center">
                 <span class="material-symbols-outlined">unarchive</span>
@@ -48,6 +49,12 @@
             </button>
           </div>
         </form>
+        <progress
+          hidden
+          max="1"
+          value="0"
+          class="h-2 w-full rounded-full bg-zinc-700 accent-emerald-400 indeterminate:accent-amber-400"
+        ></progress>
       </section>
       <section id="archive-view" hidden>
         <h2 class="text-center">Archive contents</h2>
@@ -66,7 +73,7 @@
             <template id="t-archive-entry">
               <li class="border-b-2 border-zinc-700 last:border-b-0">
                 <div class="px-2 py-0.5">
-                  <span class="file-path font-mono text-sm"></span>
+                  <span class="file-path block font-mono text-sm"></span>
                 </div>
               </li>
             </template>

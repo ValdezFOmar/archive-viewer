@@ -1,1 +1,16 @@
 @import 'tailwindcss';
+
+/**
+ * 'accent-color' should be sufficient to color the progress bar,
+ * but it does not work currently.
+ */
+
+::-moz-progress-bar,
+::-webkit-progress-value {
+  background-color: var(--color-emerald-400);
+}
+
+:indeterminate::-moz-progress-bar,
+:indeterminate::-webkit-progress-value {
+  background-color: var(--color-amber-400);
+}
