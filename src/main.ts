@@ -1,7 +1,84 @@
-import { BlobWriter, HttpReader, TextWriter, ZipReader, type Entry } from '@zip.js/zip.js';
+import { BlobWriter, HttpReader, TextWriter, ZipReader, type FileEntry } from '@zip.js/zip.js';
 
+const TEXT_FILE_EXTENSION = new Set(['.txt', '.py', '.md', '.json', '.csv', '.xml', '.html']);
+const IMAGE_FILE_EXTENSION = new Set(['.png', '.jpg', '.jpeg', '.gif', '.webp'])
+
+class ArchiveEntry {
+    readonly file: FileEntry;
+    readonly stem: string;
+    readonly extension: string;
+    readonly parents: readonly string[];
+
+    constructor(entry: FileEntry) {
+        const components = entry.filename.split('/');
+        const [name] = components.splice(components.length - 1, 1);
+        const [stem, extension] = splitFileName(name);
+        this.file = entry;
+        this.stem = stem;
+        this.extension = extension;
+        this.parents = components;
+    }
+
+    get path(): string {
+        return this.file.filename;
+    }
+
+    /**
+     * Compare entries path using their prefix, with the order:
+     *
+     * 1. By prefix: Compares the entries parents.
+     * 2. By depth: For entries sharing a prefix. Deeper entries later.
+     * 3. By stem: Entries with the same prefix and depth (same directory).
+     * 4. By extension: When all other comparisons are equal.
+     *
+     * Returns:
+     *
+     *  `<0` when `self < other`
+     *   `0` when `self == other`
+     *  `>0` when `self > other`
+     */
+    comparePath(other: ArchiveEntry): number {
+        let sharedParentsCount = 0;
+        let lastParentCmp = this.parents.length - other.parents.length;
+        for (let i = 0; i < this.parents.length && i < other.parents.length; i++) {
+            lastParentCmp = this.parents[i].localeCompare(other.parents[i], undefined, { numeric: true });
+            if (lastParentCmp !== 0) {
+                break;
+            }
+            sharedParentsCount++;
+        }
+        if (this.parents.length === sharedParentsCount && other.parents.length === sharedParentsCount) {
+            return this._compareName(other);
+        } else if (this.parents.length === sharedParentsCount) {
+            return -1;
+        } else if (other.parents.length === sharedParentsCount) {
+            return 1;
+        } else {
+            return lastParentCmp;
+        }
+    }
+
+    /**
+     * Compare entry names (name = stem + extension).
+     */
+    private _compareName(other: ArchiveEntry): number {
+        const result = this.stem.localeCompare(other.stem, undefined, { numeric: true });
+        return result === 0 ? this.extension.localeCompare(other.extension) : result;
+    }
+}
+
+/**
+ * Split a file name into the stem (part before the extension) and
+ * its file extension (includes '.').
+ *
+ * 'file.zip' => ['file', '.zip']
+ * '.gitignore' => ['.gitignore', '']
+ */
 function splitFileName(filename: string): [string, string] {
     let index = filename.lastIndexOf('.');
+    if (index === 0) {
+        return [filename, ''];
+    }
     if (index === -1) {
         index = filename.length;
     }
@@ -71,14 +148,18 @@ document.getElementById('view-form')!.addEventListener('submit', async event => 
     });
     const zipReader = new ZipReader(httpReader);
 
-    let entries: Entry[];
+    let entries: ArchiveEntry[] = [];
     try {
         input.disabled = true;
         button.disabled = true;
         progress.max = 1;
         progress.value = 0;
         progress.hidden = false;
-        entries = await zipReader.getEntries();
+        for await (const entry of zipReader.getEntriesGenerator()) {
+            if (!entry.directory) {
+                entries.push(new ArchiveEntry(entry));
+            }
+        }
     } catch (error) {
         alert('Could not preview file');
         console.error(error);
@@ -90,20 +171,8 @@ document.getElementById('view-form')!.addEventListener('submit', async event => 
         await zipReader.close();
     }
 
-    // TODO:
-    // To provide better sorting, transform the entries array and parse
-    // the 'filename' property into directory components and the actual filename,
-    // then entries can be sorted in order:
-    //  - depth (top level files first, nested files later)
-    //  - directory name (for directories at the same depth)
-    //  - file name (for files within the same directory)
-    //  - extension (when all other values are the same)
-    entries.sort((entry1, entry2) => {
-        const [name1, ext1] = splitFileName(entry1.filename);
-        const [name2, ext2] = splitFileName(entry2.filename);
-        const result = name1.localeCompare(name2, undefined, { numeric: true });
-        return result === 0 ? ext1.localeCompare(ext2) : result;
-    });
+    // Maybe add other methods for sorting entries?
+    entries.sort((a, b) => a.comparePath(b));
 
     // cleanup
     for (const img of archiveEntries.querySelectorAll('img')) {
@@ -115,37 +184,32 @@ document.getElementById('view-form')!.addEventListener('submit', async event => 
     const textTemplate = document.querySelector<HTMLTemplateElement>('#t-archive-entry-text')!;
     const imageTemplate = document.querySelector<HTMLTemplateElement>('#t-archive-entry-image')!;
 
-    let fileCount = 0;
     for (const entry of entries) {
         const clone = document.importNode(entryTemplate.content, true);
         const container = clone.querySelector('li')!;
         const pathContainer = clone.querySelector<HTMLElement>('.file-path')!;
-        const filePath = entry.filename;
-        pathContainer.textContent = filePath;
+        pathContainer.textContent = entry.path;
 
-        if (!entry.directory) {
-            fileCount++;
-            if (/\.(txt|py|md|json|csv|xml|html)$/.test(filePath)) {
-                const text = await entry.getData(new TextWriter());
-                if (text !== '') {
-                    const node = document.importNode(textTemplate.content, true);
-                    const pre = node.querySelector('pre')!;
-                    pre.textContent = text;
-                    pathContainer.parentElement?.append(node);
-                }
-            } else if (/\.(png|jpg|jpeg|gif|webp)$/.test(filePath)) {
-                const node = document.importNode(imageTemplate.content, true);
-                const img = node.querySelector('img')!;
-                const blob = await entry.getData(new BlobWriter());
-                img.src = URL.createObjectURL(blob);
-                container.append(node);
+        if (TEXT_FILE_EXTENSION.has(entry.extension)) {
+            const text = await entry.file.getData(new TextWriter());
+            if (text !== '') {
+                const node = document.importNode(textTemplate.content, true);
+                const pre = node.querySelector('pre')!;
+                pre.textContent = text;
+                pathContainer.parentElement?.append(node);
             }
+        } else if (IMAGE_FILE_EXTENSION.has(entry.extension)) {
+            const node = document.importNode(imageTemplate.content, true);
+            const img = node.querySelector('img')!;
+            const blob = await entry.file.getData(new BlobWriter());
+            img.src = URL.createObjectURL(blob);
+            container.append(node);
         }
 
         archiveEntries.append(clone);
     }
 
-    archiveDetails.textContent = `Files: ${fileCount}; Size: ${formatFileSize(httpReader.size)}`;
+    archiveDetails.textContent = `Files: ${entries.length}; Size: ${formatFileSize(httpReader.size)}`;
     archiveView.hidden = false;
 
     const url = new URL(window.location.href);
