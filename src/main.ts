@@ -133,7 +133,7 @@ document.getElementById('view-form')!.addEventListener('submit', async event => 
                     pre.textContent = text;
                     pathContainer.parentElement?.append(node);
                 }
-            } else if (/\.(png|jpg|jpeg|gif)$/.test(filePath)) {
+            } else if (/\.(png|jpg|jpeg|gif|webp)$/.test(filePath)) {
                 const node = document.importNode(imageTemplate.content, true);
                 const img = node.querySelector('img')!;
                 const blob = await entry.getData(new BlobWriter());
