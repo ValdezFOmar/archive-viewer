@@ -10,6 +10,7 @@
     "format": "prettier --write index.html vite.config.js src/"
   },
   "devDependencies": {
+    "@tailwindcss/language-server": "^0.16.0",
     "@typescript/lib-dom": "npm:@types/web",
     "prettier": "^3.9.6",
     "prettier-plugin-tailwindcss": "^0.8.1",
