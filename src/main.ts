@@ -1,7 +1,8 @@
 import { BlobWriter, HttpReader, TextWriter, ZipReader, type FileEntry } from '@zip.js/zip.js';
 
-const TEXT_FILE_EXTENSION = new Set(['.txt', '.py', '.md', '.json', '.csv', '.xml', '.html']);
-const IMAGE_FILE_EXTENSION = new Set(['.png', '.jpg', '.jpeg', '.gif', '.webp'])
+const TEXT_FILE_EXTENSIONS = new Set(['.txt', '.py', '.md', '.json', '.csv', '.xml', '.html']);
+const IMAGE_FILE_EXTENSIONS = new Set(['.png', '.jpg', '.jpeg', '.gif', '.webp']);
+const VIDEO_FILE_EXTENSIONS = new Set(['.mp4', '.webm']);
 
 class ArchiveEntry {
     readonly file: FileEntry;
@@ -172,7 +173,7 @@ document.getElementById('view-form')!.addEventListener('submit', async event => 
     entries.sort((a, b) => a.comparePath(b));
 
     // cleanup
-    for (const img of archiveEntries.querySelectorAll('img')) {
+    for (const img of archiveEntries.querySelectorAll<HTMLMediaElement>('img, video')) {
         URL.revokeObjectURL(img.src);
     }
     archiveEntries.replaceChildren();
@@ -180,6 +181,7 @@ document.getElementById('view-form')!.addEventListener('submit', async event => 
     const entryTemplate = document.querySelector<HTMLTemplateElement>('#t-archive-entry')!;
     const textTemplate = document.querySelector<HTMLTemplateElement>('#t-archive-entry-text')!;
     const imageTemplate = document.querySelector<HTMLTemplateElement>('#t-archive-entry-image')!;
+    const videoTemplate = document.querySelector<HTMLTemplateElement>('#t-archive-entry-video')!;
 
     for (const entry of entries) {
         const clone = document.importNode(entryTemplate.content, true);
@@ -187,19 +189,25 @@ document.getElementById('view-form')!.addEventListener('submit', async event => 
         const pathContainer = clone.querySelector<HTMLElement>('.file-path')!;
         pathContainer.textContent = entry.path;
 
-        if (TEXT_FILE_EXTENSION.has(entry.extension)) {
+        if (TEXT_FILE_EXTENSIONS.has(entry.extension)) {
             const text = await entry.file.getData(new TextWriter());
-            if (text !== '') {
+            if (text.trim() !== '') {
                 const node = document.importNode(textTemplate.content, true);
                 const pre = node.querySelector('pre')!;
                 pre.textContent = text;
                 pathContainer.parentElement?.append(node);
             }
-        } else if (IMAGE_FILE_EXTENSION.has(entry.extension)) {
+        } else if (IMAGE_FILE_EXTENSIONS.has(entry.extension)) {
             const node = document.importNode(imageTemplate.content, true);
             const img = node.querySelector('img')!;
             const blob = await entry.file.getData(new BlobWriter());
             img.src = URL.createObjectURL(blob);
+            container.append(node);
+        } else if (VIDEO_FILE_EXTENSIONS.has(entry.extension)) {
+            const node = document.importNode(videoTemplate.content, true);
+            const video = node.querySelector('video')!;
+            const blob = await entry.file.getData(new BlobWriter());
+            video.src = URL.createObjectURL(blob);
             container.append(node);
         }
 
