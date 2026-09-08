@@ -72,10 +72,10 @@
             <!-- base template used as a parent of the more specialized entry templates -->
             <template id="t-archive-entry">
               <li
-                class="group text-sm border-b-2 border-zinc-600 bg-zinc-800 first:rounded-t-md last:rounded-b-md last:border-b-0 even:bg-zinc-900"
+                class="group border-b-2 border-zinc-600 bg-zinc-800 text-sm first:rounded-t-md last:rounded-b-md last:border-b-0 even:bg-zinc-900"
               >
                 <div class="px-2 py-1">
-                  <div class="file-path break-all tracking-wide"></div>
+                  <div class="file-path tracking-wide break-all"></div>
                 </div>
               </li>
             </template>
@@ -83,7 +83,9 @@
             <template id="t-archive-entry-text">
               <details>
                 <summary>contents</summary>
-                <pre class="file-contents overflow-scroll whitespace-break-spaces"></pre>
+                <pre
+                  class="file-contents overflow-scroll whitespace-break-spaces"
+                ></pre>
               </details>
             </template>
             <!-- display image contents -->
@@ -99,7 +101,7 @@
         </div>
       </section>
     </main>
-    <address class="flex-none pt-8 pb-2 text-zinc-500">
+    <address class="flex-none pt-8 pb-2 text-sm text-zinc-500">
       <div class="flex justify-center gap-6">
         <a
           href="https://github.com/ValdezFOmar"

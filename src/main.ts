@@ -38,33 +38,30 @@ class ArchiveEntry {
      *  `>0` when `self > other`
      */
     comparePath(other: ArchiveEntry): number {
-        let sharedParentsCount = 0;
+        let sharedParents = 0;
         let lastParentCmp = this.parents.length - other.parents.length;
         for (let i = 0; i < this.parents.length && i < other.parents.length; i++) {
-            lastParentCmp = this.parents[i].localeCompare(other.parents[i], undefined, { numeric: true });
+            lastParentCmp = naturalCompare(this.parents[i], other.parents[i]);
             if (lastParentCmp !== 0) {
                 break;
             }
-            sharedParentsCount++;
+            sharedParents++;
         }
-        if (this.parents.length === sharedParentsCount && other.parents.length === sharedParentsCount) {
-            return this._compareName(other);
-        } else if (this.parents.length === sharedParentsCount) {
+        if (this.parents.length === sharedParents && other.parents.length === sharedParents) {
+            const result = naturalCompare(this.stem, other.stem);
+            return result === 0 ? naturalCompare(this.extension, other.extension) : result;
+        } else if (this.parents.length === sharedParents) {
             return -1;
-        } else if (other.parents.length === sharedParentsCount) {
+        } else if (other.parents.length === sharedParents) {
             return 1;
         } else {
             return lastParentCmp;
         }
     }
+}
 
-    /**
-     * Compare entry names (name = stem + extension).
-     */
-    private _compareName(other: ArchiveEntry): number {
-        const result = this.stem.localeCompare(other.stem, undefined, { numeric: true });
-        return result === 0 ? this.extension.localeCompare(other.extension) : result;
-    }
+function naturalCompare(s1: string, s2: string): number {
+    return s1.localeCompare(s2, undefined, { numeric: true });
 }
 
 /**
