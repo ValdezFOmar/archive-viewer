@@ -123,67 +123,13 @@ async function updateProgressBar(progress: HTMLProgressElement, response: Respon
     }
 }
 
-document.getElementById('view-form')!.addEventListener('submit', async event => {
-    event.preventDefault();
-
-    const input = document.getElementById('url') as HTMLInputElement;
-    const button = document.getElementById('view-button') as HTMLButtonElement;
-    const progress = document.querySelector('progress')!;
-    const archiveView = document.getElementById('archive-view')!;
-    const archiveDetails = document.getElementById('archive-details')!;
-    const archiveEntries = document.getElementById('archive-entries')!;
-
-    const archiveUrl = input.value;
-    const httpReader = new HttpReader(archiveUrl, {
-        fetch: async (input, init) => {
-            const isGet = !init?.method || init.method === 'GET';
-            const response = await fetch(input, init);
-            if (isGet && response.ok) {
-                updateProgressBar(progress, response.clone());
-            }
-            return response;
-        },
-    });
-    const zipReader = new ZipReader(httpReader);
-
-    let entries: ArchiveEntry[] = [];
-    try {
-        input.disabled = true;
-        button.disabled = true;
-        progress.max = 1;
-        progress.value = 0;
-        progress.hidden = false;
-        for await (const entry of zipReader.getEntriesGenerator()) {
-            if (!entry.directory) {
-                entries.push(new ArchiveEntry(entry));
-            }
-        }
-    } catch (error) {
-        alert('Could not preview file');
-        console.error(error);
-        return;
-    } finally {
-        input.disabled = false;
-        button.disabled = false;
-        progress.hidden = true;
-        await zipReader.close();
-    }
-
-    // Maybe add other methods for sorting entries?
-    entries.sort((a, b) => a.comparePath(b));
-
-    // cleanup
-    for (const img of archiveEntries.querySelectorAll<HTMLMediaElement>('img, video')) {
-        URL.revokeObjectURL(img.src);
-    }
-    archiveEntries.replaceChildren();
-
+async function displayEntries(entries: ArchiveEntry[], archiveSize: number) {
     const entryTemplate = document.querySelector<HTMLTemplateElement>('#t-archive-entry')!;
     const textTemplate = document.querySelector<HTMLTemplateElement>('#t-archive-entry-text')!;
     const imageTemplate = document.querySelector<HTMLTemplateElement>('#t-archive-entry-image')!;
     const videoTemplate = document.querySelector<HTMLTemplateElement>('#t-archive-entry-video')!;
 
-    for (const entry of entries) {
+    const promisess = entries.map(async entry => {
         const clone = document.importNode(entryTemplate.content, true);
         const container = clone.querySelector('li')!;
         const pathContainer = clone.querySelector<HTMLElement>('.file-path')!;
@@ -211,20 +157,76 @@ document.getElementById('view-form')!.addEventListener('submit', async event => 
             container.append(node);
         }
 
-        archiveEntries.append(clone);
+        return { entry, node: clone };
+    });
+
+    const archiveEntries = await Promise.all(promisess);
+    archiveEntries.sort((a, b) => a.entry.comparePath(b.entry));
+
+    const viewContainer = document.getElementById('archive-view')!;
+    const detailsContainer = document.getElementById('archive-details')!;
+    const entriesContainer = document.getElementById('archive-entries')!;
+
+    // Cleanup
+    for (const media of entriesContainer.querySelectorAll<HTMLMediaElement>('img, video')) {
+        URL.revokeObjectURL(media.src);
     }
 
-    archiveDetails.textContent = `Files: ${entries.length}; Size: ${formatFileSize(httpReader.size)}`;
-    archiveView.hidden = false;
+    detailsContainer.textContent = `Files: ${entries.length}; Size: ${formatFileSize(archiveSize)}`;
+    entriesContainer.replaceChildren(...archiveEntries.map(entry => entry.node));
+    viewContainer.hidden = false;
+}
 
-    const url = new URL(window.location.href);
-    url.searchParams.set('url', archiveUrl);
-    window.history.pushState(null, '', url);
+const form = document.querySelector<HTMLFormElement>('#view-form')!;
+const input = document.querySelector<HTMLInputElement>('#url')!;
+const button = document.querySelector<HTMLButtonElement>('#view-button')!;
+
+form.addEventListener('submit', async event => {
+    event.preventDefault();
+
+    const progress = document.querySelector('progress')!;
+    const archiveUrl = input.value;
+    const httpReader = new HttpReader(archiveUrl, {
+        fetch: async (input, init) => {
+            const isGet = !init?.method || init.method === 'GET';
+            const response = await fetch(input, init);
+            if (isGet && response.ok) {
+                updateProgressBar(progress, response.clone());
+            }
+            return response;
+        },
+    });
+    const zipReader = new ZipReader(httpReader);
+
+    try {
+        input.disabled = true;
+        button.disabled = true;
+        progress.max = 1;
+        progress.value = 0;
+        progress.hidden = false;
+
+        const entries: ArchiveEntry[] = [];
+        for await (const entry of zipReader.getEntriesGenerator()) {
+            if (!entry.directory) {
+                entries.push(new ArchiveEntry(entry));
+            }
+        }
+
+        displayEntries(entries, httpReader.size);
+    } catch (error) {
+        alert(`Error while processing archive:\n${error}`);
+        console.error(error);
+    } finally {
+        input.disabled = false;
+        button.disabled = false;
+        progress.max = 1;
+        progress.value = 0;
+        progress.hidden = true;
+        await zipReader.close();
+    }
 });
 
 {
-    const input = document.querySelector<HTMLInputElement>('#url')!;
-    const button = document.querySelector<HTMLButtonElement>('#view-button')!;
     const href = new URL(window.location.href);
     const url = href.searchParams.get('url');
     if (url) {
