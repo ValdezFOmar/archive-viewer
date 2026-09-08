@@ -87,7 +87,7 @@ function splitFileName(filename: string): [string, string] {
 
 function formatFileSize(bytes: number): string {
     if (bytes < 1024) {
-        return `${bytes} bytes`;
+        return `${bytes} B`;
     }
     const kilobytes = bytes / 1024;
     if (kilobytes < 1024) {
@@ -172,7 +172,8 @@ async function displayEntries(entries: ArchiveEntry[], archiveSize: number) {
         URL.revokeObjectURL(media.src);
     }
 
-    detailsContainer.textContent = `Files: ${entries.length}; Size: ${formatFileSize(archiveSize)}`;
+    detailsContainer.children[0].textContent = `Files: ${archiveEntries.length}`;
+    detailsContainer.children[1].textContent = `Size: ${formatFileSize(archiveSize)}`;
     entriesContainer.replaceChildren(...archiveEntries.map(entry => entry.node));
     viewContainer.hidden = false;
 }
