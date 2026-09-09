@@ -41,7 +41,7 @@
               id="view-button"
               form="view-form"
               type="submit"
-              class="flex-none rounded-r-lg bg-emerald-400 p-1 text-zinc-900 transition duration-300 ease-out hover:bg-emerald-600 focus:bg-emerald-600 disabled:bg-zinc-500"
+              class="flex-none rounded-r-lg bg-emerald-400 p-1 text-zinc-900 transition duration-300 ease-out hover:bg-white disabled:bg-zinc-500"
             >
               <span class="flex items-center justify-center">
                 <span class="material-symbols-outlined">unarchive</span>
@@ -82,21 +82,31 @@
             <!-- base template used as a parent of the more specialized entry templates -->
             <template id="t-archive-entry">
               <li
-                class="group border-b-2 border-zinc-600 bg-zinc-800 text-sm first:rounded-t-md last:rounded-b-md last:border-b-0 even:bg-zinc-900"
+                class="group border-b-2 border-zinc-600 bg-zinc-800 text-sm first:rounded-t-md last:rounded-b-md last:border-b-0"
               >
                 <div class="px-2 py-1">
-                  <div class="file-path tracking-wide break-all"></div>
+                  <p class="file-path tracking-wide break-all"></p>
                 </div>
               </li>
             </template>
             <!-- display text contents -->
             <template id="t-archive-entry-text">
-              <details>
-                <summary>contents</summary>
-                <pre
-                  class="file-contents overflow-scroll whitespace-break-spaces"
-                ></pre>
-              </details>
+              <div class="has-open:py-1">
+                <details
+                  class="group/details border-zinc-600 group-last:rounded-b-md open:border open:bg-zinc-900"
+                >
+                  <summary
+                    class="cursor-default border-zinc-600 text-emerald-400 transition duration-300 ease-out group-open/details:border-b group-open/details:py-1 group-open/details:pl-2 hover:text-white"
+                  >
+                    contents
+                  </summary>
+                  <div class="px-1.5 py-1">
+                    <pre
+                      class="file-contents max-h-90 overflow-scroll whitespace-break-spaces"
+                    ></pre>
+                  </div>
+                </details>
+              </div>
             </template>
             <!-- display image contents -->
             <template id="t-archive-entry-image">
