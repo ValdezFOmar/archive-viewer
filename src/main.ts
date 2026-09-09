@@ -225,10 +225,16 @@ form.addEventListener('submit', async event => {
         progress.hidden = true;
         await zipReader.close();
     }
+
+    if (import.meta.env.DEV) {
+        const url = new URL(location.href);
+        url.searchParams.set('url', input.value);
+        history.pushState(null, '', url);
+    }
 });
 
 {
-    const href = new URL(window.location.href);
+    const href = new URL(location.href);
     const url = href.searchParams.get('url');
     if (url) {
         input.value = url;
