@@ -7,6 +7,7 @@ const VIDEO_FILE_EXTENSIONS = new Set(['.mp4', '.webm']);
 class ArchiveEntry {
     readonly file: FileEntry;
     readonly stem: string;
+    readonly name: string;
     readonly extension: string;
     readonly parents: readonly string[];
 
@@ -15,6 +16,7 @@ class ArchiveEntry {
         const [name] = components.splice(components.length - 1, 1);
         const [stem, extension] = splitFileName(name);
         this.file = entry;
+        this.name = name;
         this.stem = stem;
         this.extension = extension;
         this.parents = components;
@@ -132,7 +134,13 @@ async function displayEntries(entries: ArchiveEntry[], archiveSize: number) {
     const promisess = entries.map(async entry => {
         const clone = document.importNode(entryTemplate.content, true);
         const container = clone.querySelector('li')!;
-        const pathContainer = clone.querySelector<HTMLElement>('.file-path')!;
+        const pathContainer = clone.querySelector<HTMLAnchorElement>('.file-path')!;
+
+        const blob = await entry.file.getData(new BlobWriter());
+        const objUrl = URL.createObjectURL(blob);
+
+        pathContainer.href = objUrl;
+        pathContainer.download = entry.name;
         pathContainer.textContent = entry.path;
 
         if (TEXT_FILE_EXTENSIONS.has(entry.extension)) {
@@ -146,14 +154,13 @@ async function displayEntries(entries: ArchiveEntry[], archiveSize: number) {
         } else if (IMAGE_FILE_EXTENSIONS.has(entry.extension)) {
             const node = document.importNode(imageTemplate.content, true);
             const img = node.querySelector('img')!;
-            const blob = await entry.file.getData(new BlobWriter());
-            img.src = URL.createObjectURL(blob);
+            img.src = objUrl;
+            img.alt = entry.name;
             container.append(node);
         } else if (VIDEO_FILE_EXTENSIONS.has(entry.extension)) {
             const node = document.importNode(videoTemplate.content, true);
             const video = node.querySelector('video')!;
-            const blob = await entry.file.getData(new BlobWriter());
-            video.src = URL.createObjectURL(blob);
+            video.src = objUrl;
             container.append(node);
         }
 
@@ -168,8 +175,11 @@ async function displayEntries(entries: ArchiveEntry[], archiveSize: number) {
     const entriesContainer = document.getElementById('archive-entries')!;
 
     // Cleanup
-    for (const media of entriesContainer.querySelectorAll<HTMLMediaElement>('img, video')) {
-        URL.revokeObjectURL(media.src);
+    for (const element of entriesContainer.querySelectorAll('img, video, a')) {
+        const url = element.getAttribute('src') ?? element.getAttribute('href');
+        if (url) {
+            URL.revokeObjectURL(url);
+        }
     }
 
     detailsContainer.children[0].textContent = `Files: ${archiveEntries.length}`;
@@ -213,7 +223,7 @@ form.addEventListener('submit', async event => {
             }
         }
 
-        displayEntries(entries, httpReader.size);
+        await displayEntries(entries, httpReader.size);
     } catch (error) {
         alert(`Error while processing archive:\n${error}`);
         console.error(error);

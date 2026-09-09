@@ -85,7 +85,9 @@
                 class="group border-b-2 border-zinc-600 bg-zinc-800 text-sm first:rounded-t-md last:rounded-b-md last:border-b-0"
               >
                 <div class="px-2 py-1">
-                  <p class="file-path tracking-wide break-all"></p>
+                  <a
+                    class="file-path tracking-wide break-all hover:text-white hover:underline"
+                  ></a>
                 </div>
               </li>
             </template>
@@ -111,17 +113,13 @@
             <!-- display image contents -->
             <template id="t-archive-entry-image">
               <div class="flex justify-center">
-                <img
-                  src=""
-                  class="flex-none object-contain group-last:rounded-b-md"
-                />
+                <img class="flex-none object-contain group-last:rounded-b-md" />
               </div>
             </template>
             <!-- display video player -->
             <template id="t-archive-entry-video">
               <div class="flex justify-center">
                 <video
-                  src=""
                   controls
                   class="flex-none object-contain group-last:rounded-b-md"
                 ></video>
