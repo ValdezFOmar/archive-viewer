@@ -1,8 +1,5 @@
-import { BlobWriter, HttpReader, TextWriter, ZipReader, type FileEntry } from '@zip.js/zip.js';
-
-const TEXT_FILE_EXTENSIONS = new Set(['.txt', '.py', '.md', '.json', '.csv', '.xml', '.html']);
-const IMAGE_FILE_EXTENSIONS = new Set(['.png', '.jpg', '.jpeg', '.gif', '.webp']);
-const VIDEO_FILE_EXTENSIONS = new Set(['.mp4', '.webm']);
+import * as zip from '@zip.js/zip.js';
+import { BlobWriter, HttpReader, ZipReader, type FileEntry } from '@zip.js/zip.js';
 
 class ArchiveEntry {
     readonly file: FileEntry;
@@ -125,26 +122,67 @@ async function updateProgressBar(progress: HTMLProgressElement, response: Respon
     }
 }
 
+function hasMessage(value: unknown): value is { message: unknown } {
+    return typeof value === 'object' && value !== null && 'message' in value;
+}
+
+async function showPasswordDialog(message?: string): Promise<string> {
+    const dialog = document.querySelector('dialog')!;
+    const label = dialog.querySelector('label')!;
+    const input = dialog.querySelector('input')!;
+    label.textContent = message ?? 'One or more entries require a password:';
+    input.value = '';
+    dialog.showModal();
+    return new Promise((resolve) => {
+        dialog.addEventListener('close', () => resolve(input.value), { once: true });
+    });
+}
+
+async function getPassword(entries: ArchiveEntry[]): Promise<string | undefined> {
+    const testEntry = entries.find((entry) => entry.file.encrypted);
+    if (!testEntry) {
+        return undefined;
+    }
+    const writer = new BlobWriter();
+    let message: string | undefined;
+    while (true) {
+        const password = await showPasswordDialog(message);
+        try {
+            await testEntry.file.getData(writer, { password, checkPasswordOnly: true });
+            return password;
+        } catch (error) {
+            if (hasMessage(error) && error.message === zip.ERR_INVALID_PASSWORD) {
+                message = 'Invalid password, try again:';
+            } else {
+                throw error;
+            }
+        }
+    }
+}
+
 async function displayEntries(entries: ArchiveEntry[], archiveSize: number) {
     const entryTemplate = document.querySelector<HTMLTemplateElement>('#t-archive-entry')!;
     const textTemplate = document.querySelector<HTMLTemplateElement>('#t-archive-entry-text')!;
     const imageTemplate = document.querySelector<HTMLTemplateElement>('#t-archive-entry-image')!;
     const videoTemplate = document.querySelector<HTMLTemplateElement>('#t-archive-entry-video')!;
 
+    const password = await getPassword(entries);
+
     const promisess = entries.map(async (entry) => {
         const clone = document.importNode(entryTemplate.content, true);
         const container = clone.querySelector('li')!;
         const pathContainer = clone.querySelector<HTMLAnchorElement>('.file-path')!;
 
-        const blob = await entry.file.getData(new BlobWriter());
+        const mimeType = zip.getMimeType(entry.name);
+        const blob = await entry.file.getData(new BlobWriter(mimeType), { password });
         const objUrl = URL.createObjectURL(blob);
 
         pathContainer.href = objUrl;
         pathContainer.download = entry.name;
         pathContainer.textContent = entry.path;
 
-        if (TEXT_FILE_EXTENSIONS.has(entry.extension)) {
-            const text = await entry.file.getData(new TextWriter());
+        if (mimeType.startsWith('text')) {
+            const text = await blob.text();
             if (text.trim() !== '') {
                 const node = document.importNode(textTemplate.content, true);
                 const pre = node.querySelector('pre')!;
@@ -155,13 +193,13 @@ async function displayEntries(entries: ArchiveEntry[], archiveSize: number) {
                 pre.textContent = text;
                 pathContainer.parentElement?.append(node);
             }
-        } else if (IMAGE_FILE_EXTENSIONS.has(entry.extension)) {
+        } else if (mimeType.startsWith('image')) {
             const node = document.importNode(imageTemplate.content, true);
             const img = node.querySelector('img')!;
             img.src = objUrl;
             img.alt = entry.name;
             container.append(node);
-        } else if (VIDEO_FILE_EXTENSIONS.has(entry.extension)) {
+        } else if (mimeType.startsWith('video')) {
             const node = document.importNode(videoTemplate.content, true);
             const video = node.querySelector('video')!;
             video.src = objUrl;

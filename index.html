@@ -3,11 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="stylesheet" href="/src/style.css" />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=unarchive"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght@24,400&icon_names=unarchive&display=block"
     />
+    <link rel="stylesheet" href="/src/style.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Archive Viewer</title>
   </head>
@@ -109,6 +109,28 @@
         </div>
       </section>
     </main>
+    <dialog closedby="none" class="absolute top-1/4 left-1/2 -translate-x-1/2 bg-transparent backdrop:bg-black/35">
+      <form class="rounded-4xl bg-zinc-800 p-8 text-zinc-200">
+        <div class="pb-4">
+          <label for="password" class="block pb-2 text-balance">Password:</label>
+          <input
+            id="password"
+            type="password"
+            name="password"
+            value=""
+            required
+            class="rounded-lg border border-zinc-400 px-2 py-0.5 focus:outline-2 focus:outline-emerald-400"
+          />
+        </div>
+        <button
+          type="submit"
+          formmethod="dialog"
+          class="rounded-lg bg-emerald-400 px-2 py-1 font-bold text-zinc-900 active:bg-white"
+        >
+          Confirm
+        </button>
+      </form>
+    </dialog>
     <address class="flex-none pt-8 pb-2 text-sm text-zinc-500">
       <div class="flex justify-center gap-6">
         <a href="https://github.com/ValdezFOmar" rel="author" target="_blank" class="underline hover:text-emerald-400">
