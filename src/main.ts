@@ -160,11 +160,16 @@ async function getPassword(entries: ArchiveEntry[]): Promise<string | undefined>
     }
 }
 
-async function displayEntries(entries: ArchiveEntry[], archiveSize: number) {
+async function displayEntries(
+    entries: ArchiveEntry[],
+    archiveSize: number,
+): Promise<DocumentFragment> {
+    const archiveTemplate = document.querySelector<HTMLTemplateElement>('#t-archive')!;
     const entryTemplate = document.querySelector<HTMLTemplateElement>('#t-archive-entry')!;
     const textTemplate = document.querySelector<HTMLTemplateElement>('#t-archive-entry-text')!;
     const imageTemplate = document.querySelector<HTMLTemplateElement>('#t-archive-entry-image')!;
     const videoTemplate = document.querySelector<HTMLTemplateElement>('#t-archive-entry-video')!;
+    const buttonTemplate = document.querySelector<HTMLTemplateElement>('#t-archive-entry-extract')!;
 
     const password = await getPassword(entries);
 
@@ -204,6 +209,19 @@ async function displayEntries(entries: ArchiveEntry[], archiveSize: number) {
             const video = node.querySelector('video')!;
             video.src = objUrl;
             container.append(node);
+        } else if (mimeType === 'application/zip') {
+            const node = document.importNode(buttonTemplate.content, true);
+            const button = node.querySelector('button')!;
+            button.addEventListener('click', async () => {
+                const httpReader = new HttpReader(objUrl, { preventHeadRequest: true });
+                const subArchive = await getArchiveElement(httpReader);
+                const h2 = subArchive.querySelector('h2')!;
+                h2.textContent = entry.name;
+                viewContainer.append(subArchive);
+                h2.scrollIntoView({ behavior: 'smooth' });
+                button.remove();
+            });
+            container.children[0].append(node);
         }
 
         return { entry, node: clone };
@@ -212,27 +230,36 @@ async function displayEntries(entries: ArchiveEntry[], archiveSize: number) {
     const archiveEntries = await Promise.all(promisess);
     archiveEntries.sort((a, b) => a.entry.comparePath(b.entry));
 
-    const viewContainer = document.getElementById('archive-view')!;
-    const detailsContainer = document.getElementById('archive-details')!;
-    const entriesContainer = document.getElementById('archive-entries')!;
-
-    // Cleanup
-    for (const element of entriesContainer.querySelectorAll('img, video, a')) {
-        const url = element.getAttribute('src') ?? element.getAttribute('href');
-        if (url) {
-            URL.revokeObjectURL(url);
-        }
-    }
+    const archiveContainer = document.importNode(archiveTemplate.content, true);
+    const detailsContainer = archiveContainer.querySelector('.archive-details')!;
+    const entriesContainer = archiveContainer.querySelector('.archive-entries')!;
 
     detailsContainer.children[0].textContent = `Files: ${archiveEntries.length}`;
     detailsContainer.children[1].textContent = `Size: ${formatFileSize(archiveSize)}`;
-    entriesContainer.replaceChildren(...archiveEntries.map((entry) => entry.node));
-    viewContainer.hidden = false;
+    entriesContainer.append(...archiveEntries.map((entry) => entry.node));
+    return archiveContainer;
+}
+
+async function getArchiveElement(httpReader: HttpReader): Promise<DocumentFragment> {
+    const zipReader = new ZipReader(httpReader);
+    try {
+        const entries: ArchiveEntry[] = [];
+        for await (const entry of zipReader.getEntriesGenerator()) {
+            if (!entry.directory) {
+                entries.push(new ArchiveEntry(entry));
+            }
+        }
+        const node = await displayEntries(entries, httpReader.size);
+        return node;
+    } finally {
+        await zipReader.close();
+    }
 }
 
 const form = document.querySelector<HTMLFormElement>('#view-form')!;
 const input = document.querySelector<HTMLInputElement>('#url')!;
 const button = document.querySelector<HTMLButtonElement>('#view-button')!;
+const viewContainer = document.getElementById('archive-view')!;
 
 form.addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -249,7 +276,6 @@ form.addEventListener('submit', async (event) => {
             return response;
         },
     });
-    const zipReader = new ZipReader(httpReader);
 
     try {
         input.disabled = true;
@@ -258,14 +284,15 @@ form.addEventListener('submit', async (event) => {
         progress.value = 0;
         progress.hidden = false;
 
-        const entries: ArchiveEntry[] = [];
-        for await (const entry of zipReader.getEntriesGenerator()) {
-            if (!entry.directory) {
-                entries.push(new ArchiveEntry(entry));
+        const node = await getArchiveElement(httpReader);
+        // release resources before replacing the archive view
+        for (const element of viewContainer.querySelectorAll('img, video, a')) {
+            const url = element.getAttribute('src') ?? element.getAttribute('href');
+            if (url) {
+                URL.revokeObjectURL(url);
             }
         }
-
-        await displayEntries(entries, httpReader.size);
+        viewContainer.replaceChildren(node);
     } catch (error) {
         alert(`Error while processing archive:\n${error}`);
         console.error(error);
@@ -275,8 +302,9 @@ form.addEventListener('submit', async (event) => {
         progress.max = 1;
         progress.value = 0;
         progress.hidden = true;
-        await zipReader.close();
     }
+
+    viewContainer.hidden = false;
 
     if (import.meta.env.DEV) {
         const url = new URL(location.href);
