@@ -24,7 +24,6 @@
   },
   "prettier": {
     "singleQuote": true,
-    "arrowParens": "avoid",
     "tailwindStylesheet": "./src/style.css",
     "plugins": [
       "prettier-plugin-tailwindcss"

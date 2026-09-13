@@ -131,7 +131,7 @@ async function displayEntries(entries: ArchiveEntry[], archiveSize: number) {
     const imageTemplate = document.querySelector<HTMLTemplateElement>('#t-archive-entry-image')!;
     const videoTemplate = document.querySelector<HTMLTemplateElement>('#t-archive-entry-video')!;
 
-    const promisess = entries.map(async entry => {
+    const promisess = entries.map(async (entry) => {
         const clone = document.importNode(entryTemplate.content, true);
         const container = clone.querySelector('li')!;
         const pathContainer = clone.querySelector<HTMLAnchorElement>('.file-path')!;
@@ -148,6 +148,10 @@ async function displayEntries(entries: ArchiveEntry[], archiveSize: number) {
             if (text.trim() !== '') {
                 const node = document.importNode(textTemplate.content, true);
                 const pre = node.querySelector('pre')!;
+                const button = node.querySelector('button')!;
+                button.addEventListener('click', async () => {
+                    await navigator.clipboard.writeText(pre.innerText);
+                });
                 pre.textContent = text;
                 pathContainer.parentElement?.append(node);
             }
@@ -184,7 +188,7 @@ async function displayEntries(entries: ArchiveEntry[], archiveSize: number) {
 
     detailsContainer.children[0].textContent = `Files: ${archiveEntries.length}`;
     detailsContainer.children[1].textContent = `Size: ${formatFileSize(archiveSize)}`;
-    entriesContainer.replaceChildren(...archiveEntries.map(entry => entry.node));
+    entriesContainer.replaceChildren(...archiveEntries.map((entry) => entry.node));
     viewContainer.hidden = false;
 }
 
@@ -192,7 +196,7 @@ const form = document.querySelector<HTMLFormElement>('#view-form')!;
 const input = document.querySelector<HTMLInputElement>('#url')!;
 const button = document.querySelector<HTMLButtonElement>('#view-button')!;
 
-form.addEventListener('submit', async event => {
+form.addEventListener('submit', async (event) => {
     event.preventDefault();
 
     const progress = document.querySelector('progress')!;
