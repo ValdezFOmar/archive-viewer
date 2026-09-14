@@ -1,6 +1,29 @@
 import * as zip from '@zip.js/zip.js';
 import { BlobWriter, HttpReader, ZipReader, type FileEntry } from '@zip.js/zip.js';
 
+// Image and video mime types commonly supported in browsers
+const IMAGE_MIME_TYPES = new Set([
+    'image/apng',
+    'image/avif',
+    'image/bmp',
+    'image/gif',
+    'image/jpeg',
+    'image/jxl',
+    'image/png',
+    'image/svg+xml',
+    'image/webp',
+    'image/x-icon',
+])
+const VIDEO_MIME_TYPES = new Set([
+    'video/matroska',
+    'video/mp4',
+    'video/mpeg',
+    'video/ogg',
+    'video/webm',
+    'video/x-matroska',
+    'video/x-smvideo',
+])
+
 class ArchiveEntry {
     readonly file: FileEntry;
     readonly stem: string;
@@ -193,18 +216,18 @@ async function displayEntries(
                 const pre = node.querySelector('pre')!;
                 const button = node.querySelector('button')!;
                 button.addEventListener('click', async () => {
-                    await navigator.clipboard.writeText(pre.innerText);
+                    await navigator.clipboard.writeText(text);
                 });
                 pre.textContent = text;
                 pathContainer.parentElement?.append(node);
             }
-        } else if (mimeType.startsWith('image')) {
+        } else if (IMAGE_MIME_TYPES.has(mimeType)) {
             const node = document.importNode(imageTemplate.content, true);
             const img = node.querySelector('img')!;
             img.src = objUrl;
             img.alt = entry.name;
             container.append(node);
-        } else if (mimeType.startsWith('video')) {
+        } else if (VIDEO_MIME_TYPES.has(mimeType)) {
             const node = document.importNode(videoTemplate.content, true);
             const video = node.querySelector('video')!;
             video.src = objUrl;
