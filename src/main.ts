@@ -238,10 +238,10 @@ async function displayEntries(
             button.addEventListener('click', async () => {
                 const httpReader = new HttpReader(objUrl, { preventHeadRequest: true });
                 const subArchive = await getArchiveElement(httpReader);
-                const h2 = subArchive.querySelector('h2')!;
-                h2.textContent = entry.name;
+                const subHeading = subArchive.querySelector<HTMLElement>('.sub-heading')!;
+                subHeading.textContent = entry.path;
                 viewContainer.append(subArchive);
-                h2.scrollIntoView({ behavior: 'smooth' });
+                subHeading.parentElement?.scrollIntoView({ behavior: 'smooth' });
                 button.remove();
             });
             container.children[0].append(node);
