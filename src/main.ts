@@ -13,7 +13,7 @@ const IMAGE_MIME_TYPES = new Set([
     'image/svg+xml',
     'image/webp',
     'image/x-icon',
-])
+]);
 const VIDEO_MIME_TYPES = new Set([
     'video/matroska',
     'video/mp4',
@@ -22,7 +22,7 @@ const VIDEO_MIME_TYPES = new Set([
     'video/webm',
     'video/x-matroska',
     'video/x-smvideo',
-])
+]);
 
 class ArchiveEntry {
     readonly file: FileEntry;
@@ -149,15 +149,25 @@ function hasMessage(value: unknown): value is { message: unknown } {
     return typeof value === 'object' && value !== null && 'message' in value;
 }
 
+class CancelDialog extends Error {}
+
 async function showPasswordDialog(message?: string): Promise<string> {
     const dialog = document.querySelector('dialog')!;
     const label = dialog.querySelector('label')!;
     const input = dialog.querySelector('input')!;
-    label.textContent = message ?? 'One or more entries require a password:';
+    label.textContent = message ?? 'Password:';
     input.value = '';
+    dialog.returnValue = '';
     dialog.showModal();
-    return new Promise((resolve) => {
-        dialog.addEventListener('close', () => resolve(input.value), { once: true });
+    return new Promise((resolve, reject) => {
+        const onClose = () => {
+            if (dialog.returnValue === 'confirm') {
+                resolve(input.value);
+            } else {
+                reject(new CancelDialog(`Closed with: "${dialog.returnValue}"`));
+            }
+        };
+        dialog.addEventListener('close', onClose, { once: true });
     });
 }
 
@@ -167,7 +177,7 @@ async function getPassword(entries: ArchiveEntry[]): Promise<string | undefined>
         return undefined;
     }
     const writer = new BlobWriter();
-    let message: string | undefined;
+    let message = 'One or more entries requires a password:';
     while (true) {
         const password = await showPasswordDialog(message);
         try {
@@ -317,8 +327,13 @@ form.addEventListener('submit', async (event) => {
         }
         viewContainer.replaceChildren(node);
     } catch (error) {
+        if (error instanceof CancelDialog) {
+            console.debug(error);
+            return;
+        }
         alert(`Error while processing archive:\n${error}`);
         console.error(error);
+        return;
     } finally {
         input.disabled = false;
         button.disabled = false;
