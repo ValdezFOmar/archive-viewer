@@ -33,7 +33,7 @@ class ArchiveEntry {
 
     constructor(entry: FileEntry) {
         const components = entry.filename.split('/');
-        const [name] = components.splice(components.length - 1, 1);
+        const name = components.pop()!;
         const [stem, extension] = splitFileName(name);
         this.file = entry;
         this.name = name;
@@ -91,20 +91,21 @@ function naturalCompare(s1: string, s2: string): number {
  * Split a file name into the stem (part before the extension) and
  * its file extension (includes '.').
  *
- * 'file.zip' => ['file', '.zip']
- * '.gitignore' => ['.gitignore', '']
+ *  ```js
+ * splitFileName('file.zip')    // ['file', '.zip']
+ * splitFileName('file.tar.gz') // ['file.tar', '.gz']
+ * splitFileName('LICENSE')     // ['LICENSE', '']
+ * splitFileName('.gitignore')  // ['.gitignore', '']
+ *  ```
  */
-function splitFileName(filename: string): [string, string] {
-    let index = filename.lastIndexOf('.');
-    if (index === 0) {
-        return [filename, ''];
+function splitFileName(name: string): [string, string] {
+    const index = name.lastIndexOf('.');
+    if (index === -1 || index === 0) {
+        return [name, ''];
     }
-    if (index === -1) {
-        index = filename.length;
-    }
-    const name = filename.slice(0, index);
-    const ext = filename.slice(index);
-    return [name, ext];
+    const stem = name.slice(0, index);
+    const ext = name.slice(index);
+    return [stem, ext];
 }
 
 function formatFileSize(bytes: number): string {
@@ -217,7 +218,7 @@ async function displayEntries(
 
         pathContainer.href = objUrl;
         pathContainer.download = entry.name;
-        pathContainer.textContent = entry.path;
+        pathContainer.textContent = entry.path.replaceAll('_', '_\u{200B}'); // for better word breaking
 
         if (mimeType.startsWith('text')) {
             const text = await blob.text();

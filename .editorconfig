@@ -7,7 +7,6 @@ trim_trainling_whitespace = true
 
 [*.html]
 indent_size = 2
-max_line_length = 120
 
 [*.css]
 indent_size = 2
@@ -17,4 +16,3 @@ indent_size = 2
 
 [*.{js,ts}]
 indent_size = 4
-max_line_length = 100

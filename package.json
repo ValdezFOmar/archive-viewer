@@ -23,7 +23,16 @@
     "tailwindcss": "^4.3.3"
   },
   "prettier": {
+    "printWidth": 100,
     "singleQuote": true,
+    "overrides": [
+      {
+        "files": "*.html",
+        "options": {
+          "printWidth": 120
+        }
+      }
+    ],
     "tailwindStylesheet": "./src/style.css",
     "plugins": [
       "prettier-plugin-tailwindcss"
