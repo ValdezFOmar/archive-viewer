@@ -12,127 +12,126 @@
     <title>Archive Viewer</title>
   </head>
 
-  <body class="flex min-h-dvh flex-col px-2">
-    <header class="py-3">
-      <h1 class="text-center font-mono text-2xl font-bold text-emerald-400">
-        <a href="%BASE_URL%">Archive Viewer</a>
-      </h1>
-    </header>
-    <main class="grow">
-      <section class="px-2 pb-4">
-        <form id="view-form">
-          <label for="url" class="block pb-0.5 text-center text-sm text-zinc-400">Archive URL</label>
-          <div class="flex">
-            <input
-              type="text"
-              name="url"
-              id="url"
-              pattern="https?://.*"
-              placeholder="https://example.com/archive.zip"
-              required
-              class="grow rounded-l-lg border border-r-0 border-zinc-600 px-2 py-0.5 transition duration-300 ease-out placeholder:text-zinc-600 placeholder:italic hover:not-focus:border-zinc-400 focus:outline-1 focus:outline-emerald-400 disabled:text-zinc-400"
-            />
-            <button
-              id="view-button"
-              form="view-form"
-              type="submit"
-              class="flex-none rounded-r-lg bg-emerald-400 p-1 text-zinc-900 transition duration-300 ease-out hover:bg-white active:bg-white disabled:bg-zinc-400"
-            >
-              <span class="flex items-center justify-center">
-                <span class="material-symbols-outlined">unarchive</span>
-              </span>
-            </button>
-          </div>
-        </form>
-        <progress
-          hidden
-          max="1"
-          value="0"
-          class="h-2 w-full rounded-full bg-zinc-700 accent-emerald-400 indeterminate:accent-amber-400"
-        ></progress>
-      </section>
-      <div id="archive-view" hidden></div>
-
-      <!-- base template for viewing a single archive -->
-      <template id="t-archive">
-        <section class="mb-6">
-          <hgroup>
-            <h2 class="text-center text-lg underline underline-offset-3">Archive Contents</h2>
-            <p class="sub-heading text-center text-sm text-zinc-400"></p>
-          </hgroup>
-          <div class="archive-content">
-            <section class="pb-2">
-              <h3 class="pb-1.5 pl-1 text-sm text-zinc-400 italic">Details</h3>
-              <ul class="archive-details inline-flex justify-start rounded-lg border-2 border-zinc-600 block-auto">
-                <li class="border-r-2 border-zinc-600 px-2 py-1 last:border-0">Files: 0</li>
-                <li class="border-r-2 border-zinc-600 px-2 py-1 last:border-0">Size: 0</li>
-              </ul>
-            </section>
-            <section>
-              <h3 class="pb-1.5 pl-1 text-sm text-zinc-400 italic">Entries</h3>
-              <ul class="archive-entries rounded-lg border-2 border-zinc-600"></ul>
-            </section>
-          </div>
-        </section>
-      </template>
-
-      <!-- base template used as a parent of the more specialized entry templates -->
-      <template id="t-archive-entry">
-        <li class="group border-b-2 border-zinc-600 text-sm first:rounded-t-md last:rounded-b-md last:border-b-0">
-          <div class="flex">
-            <div class="grow px-2 py-1">
-              <a class="file-path tracking-wide wrap-anywhere hover:text-white hover:underline"></a>
-            </div>
-          </div>
-        </li>
-      </template>
-
-      <!-- display text contents -->
-      <template id="t-archive-entry-text">
-        <div class="py-1">
-          <details class="group border-2 border-zinc-600 bg-zinc-800 group-last:rounded-b-md">
-            <summary class="flex cursor-default border-zinc-600 transition duration-300 ease-out group-open:border-b-2">
-              <span class="grow px-2 py-1 text-center text-emerald-400 active:bg-zinc-600">contents</span>
+  <body>
+    <div class="flex min-h-dvh grow flex-col">
+      <header class="flex-none py-3">
+        <h1 class="text-center font-mono text-2xl font-bold text-emerald-400">
+          <a href="%BASE_URL%">Archive Viewer</a>
+        </h1>
+      </header>
+      <main class="grow">
+        <section class="px-2">
+          <form id="view-form">
+            <label for="url" class="block text-center text-sm text-zinc-400">Archive URL</label>
+            <div class="flex">
+              <input
+                type="text"
+                name="url"
+                id="url"
+                pattern="https?://.*"
+                placeholder="https://example.com/archive.zip"
+                required
+                class="grow rounded-l-lg border border-r-0 border-zinc-600 px-2 py-0.5 outline-0 placeholder:text-zinc-600 hover:not-focus:border-zinc-400 focus:border-emerald-400 disabled:text-zinc-400"
+              />
               <button
-                type="button"
-                class="hidden flex-none border-l-2 border-zinc-600 px-3 py-1 group-open:block active:bg-zinc-600"
+                id="view-button"
+                form="view-form"
+                type="submit"
+                class="flex-none rounded-r-lg bg-emerald-400 p-1 text-zinc-900 transition duration-300 ease-out hover:bg-white active:bg-white disabled:bg-zinc-600 disabled:text-zinc-200"
               >
-                copy
+                <span class="material-symbols-outlined block!">unarchive</span>
               </button>
-            </summary>
-            <div class="p-2">
-              <pre class="file-contents max-h-90 overflow-scroll whitespace-break-spaces"></pre>
             </div>
-          </details>
+          </form>
+          <progress
+            hidden
+            max="10"
+            value="5"
+            class="h-2 w-full rounded-full bg-zinc-600 accent-emerald-400 indeterminate:accent-amber-400"
+          ></progress>
+        </section>
+        <div id="archive-view"></div>
+      </main>
+      <footer class="flex-none pt-12 pb-3 text-sm text-zinc-400">
+        <div class="text-center">
+          <a
+            href="https://github.com/ValdezFOmar/archive-viewer"
+            target="_blank"
+            class="underline underline-offset-2 hover:text-white active:text-white"
+          >
+            source
+          </a>
         </div>
-      </template>
+      </footer>
+    </div>
 
-      <!-- display button for extracting a nested archive -->
-      <template id="t-archive-entry-extract">
-        <button
-          type="button"
-          class="flex-none bg-emerald-400 p-0.5 text-zinc-900 transition duration-300 ease-out group-first:rounded-tr-md group-last:rounded-br-md hover:bg-white active:bg-white disabled:bg-zinc-400"
-        >
-          <span class="flex">
-            <span class="material-symbols-outlined">unarchive</span>
+    <!-- base template for viewing a single archive -->
+    <template id="t-archive">
+      <section class="mt-6">
+        <hgroup class="mb-1 px-2 text-center">
+          <h2 class="text-xl font-medium underline underline-offset-4">Archive Contents</h2>
+          <p class="sub-heading text-sm wrap-break-word text-zinc-400"></p>
+        </hgroup>
+        <div class="rounded-lg border border-zinc-600">
+          <section class="rounded-t-lg border-b border-zinc-600 bg-zinc-800 p-2">
+            <h3 class="mb-1 text-lg font-medium">Details</h3>
+            <ul class="archive-details flex justify-start gap-6">
+              <li><span class="text-zinc-400">Files: </span></li>
+              <li><span class="text-zinc-400">Size: </span></li>
+            </ul>
+          </section>
+          <section>
+            <h3 class="p-2 text-lg font-medium">Entries</h3>
+            <ul class="archive-entries"></ul>
+          </section>
+        </div>
+      </section>
+    </template>
+
+    <!-- base template used as a parent of the more specialized entry templates -->
+    <template id="t-archive-entry">
+      <li class="group border-t border-zinc-800 p-2 text-sm">
+        <span class="flex gap-2 not-only:mb-0.5">
+          <span class="grow wrap-anywhere">
+            <a class="file-path inline-block align-middle hover:text-white hover:underline active:text-white"></a>
           </span>
-        </button>
-      </template>
+        </span>
+      </li>
+    </template>
 
-      <!-- display image contents -->
-      <template id="t-archive-entry-image">
-        <div class="flex justify-center">
-          <img class="flex-none object-contain group-last:rounded-b-md" />
-        </div>
-      </template>
+    <!-- display text contents -->
+    <template id="t-archive-entry-text">
+      <details class="group border border-zinc-600 bg-zinc-800">
+        <summary class="flex cursor-default border-zinc-600 group-open:border-b">
+          <span class="grow p-1 text-center text-emerald-400 active:bg-zinc-600">contents</span>
+          <button
+            type="button"
+            class="hidden flex-none border-l border-zinc-600 px-3 py-1 group-open:block active:bg-zinc-600"
+          >
+            copy
+          </button>
+        </summary>
+        <pre class="max-h-48 overflow-scroll p-1 whitespace-break-spaces text-zinc-300"></pre>
+      </details>
+    </template>
 
-      <!-- display video player -->
-      <template id="t-archive-entry-video">
-        <div class="flex justify-center">
-          <video controls class="flex-none object-contain group-last:rounded-b-md"></video>
-        </div>
-      </template>
-    </main>
+    <!-- display button for extracting a nested archive -->
+    <template id="t-archive-entry-extract">
+      <button type="button" class="flex-none text-emerald-400 active:text-white">
+        <span class="material-symbols-outlined block!">unarchive</span>
+      </button>
+    </template>
+
+    <!-- display image contents -->
+    <template id="t-archive-entry-image">
+      <img class="object-contain" />
+    </template>
+
+    <!-- display video player -->
+    <template id="t-archive-entry-video">
+      <video controls class="object-contain"></video>
+    </template>
+
     <dialog
       id="archive-password-dialog"
       closedby="none"
@@ -174,20 +173,6 @@
         </div>
       </form>
     </dialog>
-    <address class="flex-none pt-8 pb-2 text-sm text-zinc-500">
-      <div class="flex justify-center gap-6">
-        <a href="https://github.com/ValdezFOmar" rel="author" target="_blank" class="underline hover:text-emerald-400">
-          author
-        </a>
-        <a
-          href="https://github.com/ValdezFOmar/archive-viewer"
-          target="_blank"
-          class="underline hover:text-emerald-400"
-        >
-          source
-        </a>
-      </div>
-    </address>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

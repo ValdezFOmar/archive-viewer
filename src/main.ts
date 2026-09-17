@@ -230,7 +230,7 @@ async function displayEntries(
                     await navigator.clipboard.writeText(text);
                 });
                 pre.textContent = text;
-                pathContainer.parentElement?.append(node);
+                container.append(node);
             }
         } else if (IMAGE_MIME_TYPES.has(mimeType)) {
             const node = document.importNode(imageTemplate.content, true);
@@ -249,7 +249,7 @@ async function displayEntries(
             button.addEventListener('click', async () => {
                 const httpReader = new HttpReader(objUrl, { preventHeadRequest: true });
                 const subArchive = await getArchiveElement(httpReader);
-                const subHeading = subArchive.querySelector<HTMLElement>('.sub-heading')!;
+                const subHeading = subArchive.querySelector('.sub-heading')!;
                 subHeading.textContent = entry.path;
                 viewContainer.append(subArchive);
                 subHeading.parentElement?.scrollIntoView({ behavior: 'smooth' });
@@ -268,8 +268,8 @@ async function displayEntries(
     const detailsContainer = archiveContainer.querySelector('.archive-details')!;
     const entriesContainer = archiveContainer.querySelector('.archive-entries')!;
 
-    detailsContainer.children[0].textContent = `Files: ${archiveEntries.length}`;
-    detailsContainer.children[1].textContent = `Size: ${formatFileSize(archiveSize)}`;
+    detailsContainer.children[0].append(archiveEntries.length.toString());
+    detailsContainer.children[1].append(formatFileSize(archiveSize));
     entriesContainer.append(...archiveEntries.map((entry) => entry.node));
     return archiveContainer;
 }
