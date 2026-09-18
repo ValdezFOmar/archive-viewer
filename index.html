@@ -91,7 +91,7 @@
     <!-- base template used as a parent of the more specialized entry templates -->
     <template id="t-archive-entry">
       <li class="group border-t border-zinc-800 p-2 text-sm">
-        <span class="flex gap-2 not-only:mb-0.5">
+        <span class="flex gap-2 not-only:mb-1">
           <span class="grow wrap-anywhere">
             <a class="file-path inline-block align-middle hover:text-white hover:underline active:text-white"></a>
           </span>
@@ -101,18 +101,23 @@
 
     <!-- display text contents -->
     <template id="t-archive-entry-text">
-      <details class="group border border-zinc-600 bg-zinc-800">
-        <summary class="flex cursor-default border-zinc-600 group-open:border-b">
-          <span class="grow p-1 text-center text-emerald-400 active:bg-zinc-600">contents</span>
+      <article class="group rounded-sm border border-zinc-600">
+        <header class="flex items-center gap-2 border-b border-zinc-600 p-2">
+          <div class="h-min grow">
+            <h4 class="mr-2 inline-block">Content</h4>
+            <span class="lines text-zinc-400">0 lines</span>
+          </div>
           <button
             type="button"
-            class="hidden flex-none border-l border-zinc-600 px-3 py-1 group-open:block active:bg-zinc-600"
+            class="flex-none rounded-sm border border-emerald-400 px-2 py-1 text-emerald-400 active:border-white active:bg-zinc-600 active:text-white"
           >
-            copy
+            Copy
           </button>
-        </summary>
-        <pre class="max-h-48 overflow-scroll p-1 whitespace-break-spaces text-zinc-300"></pre>
-      </details>
+        </header>
+        <div class="max-h-52 overflow-scroll rounded-b-sm bg-zinc-800 p-2">
+          <pre class="font-mono whitespace-break-spaces tab-8 slashed-zero"></pre>
+        </div>
+      </article>
     </template>
 
     <!-- display button for extracting a nested archive -->

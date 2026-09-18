@@ -120,6 +120,14 @@ function formatFileSize(bytes: number): string {
     return megabytes.toFixed(0) + ' MB';
 }
 
+function countLines(text: string): number {
+    let lineCount = text.endsWith('\n') ? 0 : 1;
+    for (const _ of text.matchAll(/\n/g)) {
+        lineCount++;
+    }
+    return lineCount;
+}
+
 // NOTE: Always consume the response, otherwise it could cause performance/memory problems.
 async function updateProgressBar(progress: HTMLProgressElement, response: Response) {
     if (response.body) {
@@ -222,13 +230,16 @@ async function displayEntries(
 
         if (mimeType.startsWith('text')) {
             const text = await blob.text();
-            if (text.trim() !== '') {
+            if (text !== '' && text !== '\n' && text !== '\r\n') {
                 const node = document.importNode(textTemplate.content, true);
                 const pre = node.querySelector('pre')!;
+                const lines = node.querySelector('.lines')!;
                 const button = node.querySelector('button')!;
                 button.addEventListener('click', async () => {
                     await navigator.clipboard.writeText(text);
                 });
+                const lineCount = countLines(text);
+                lines.textContent = `${lineCount} ${lineCount === 1 ? 'line' : 'lines'}`;
                 pre.textContent = text;
                 container.append(node);
             }
