@@ -186,7 +186,7 @@ async function getPassword(entries: ArchiveEntry[]): Promise<string | undefined>
         return undefined;
     }
     const writer = new BlobWriter();
-    let message = 'One or more entries requires a password:';
+    let message = 'Enter password:';
     while (true) {
         const password = await showPasswordDialog(message);
         try {
