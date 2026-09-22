@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" class="bg-zinc-900 text-zinc-200">
+<html lang="en" class="bg-zinc-900 text-white">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -13,17 +13,17 @@
   </head>
 
   <body>
-    <div class="flex min-h-dvh grow flex-col">
-      <header class="flex-none py-3">
-        <h1 class="text-center font-mono text-2xl font-bold text-emerald-400">
+    <div class="mx-auto flex min-h-dvh max-w-180 grow flex-col">
+      <header class="flex-none py-3 sm:py-6">
+        <h1 class="text-center font-mono text-2xl font-bold text-emerald-400 sm:text-3xl">
           <a href="%BASE_URL%">Archive Viewer</a>
         </h1>
       </header>
       <main class="grow">
         <section class="px-2">
-          <form id="view-form">
-            <label for="url" class="block text-center text-sm text-zinc-400">Archive URL</label>
-            <div class="flex">
+          <form id="view-form" class="flex flex-col justify-center sm:flex-row sm:items-center sm:gap-2">
+            <label for="url" class="block h-min text-center text-sm text-zinc-400 sm:text-base">Archive URL</label>
+            <div class="flex grow sm:w-3/4 sm:flex-none">
               <input
                 type="text"
                 name="url"
@@ -37,7 +37,7 @@
                 id="view-button"
                 form="view-form"
                 type="submit"
-                class="flex-none rounded-r-lg bg-emerald-400 p-1 text-zinc-900 transition duration-300 ease-out hover:bg-white active:bg-white disabled:bg-zinc-600 disabled:text-zinc-200"
+                class="flex-none rounded-r-lg bg-emerald-400 p-1 text-zinc-900 hover:bg-white active:bg-white disabled:bg-zinc-600 disabled:text-white"
               >
                 <span class="material-symbols-outlined block!">unarchive</span>
               </button>
@@ -52,7 +52,7 @@
         </section>
         <div id="archive-view"></div>
       </main>
-      <footer class="flex-none pt-12 pb-3 text-sm text-zinc-400">
+      <footer class="flex-none pt-12 pb-3 text-sm text-zinc-400 sm:text-base">
         <div class="text-center">
           <a
             href="https://github.com/ValdezFOmar/archive-viewer"
@@ -70,18 +70,18 @@
       <section class="mt-6">
         <hgroup class="mb-1 px-2 text-center">
           <h2 class="text-xl font-medium underline underline-offset-4">Archive Contents</h2>
-          <p class="archive-name text-sm wrap-break-word text-zinc-400"></p>
+          <p class="archive-name text-sm wrap-break-word text-zinc-400 sm:text-base"></p>
         </hgroup>
         <div class="rounded-lg border border-zinc-600">
-          <section class="rounded-t-lg border-b border-zinc-600 bg-zinc-800 p-2">
-            <h3 class="mb-1 text-lg font-medium">Details</h3>
-            <ul class="archive-details flex justify-start gap-6">
+          <section class="rounded-t-lg border-b border-zinc-600 bg-zinc-800 p-2 sm:p-4">
+            <h3 class="mb-1 text-lg font-medium sm:mb-2 sm:text-xl">Details</h3>
+            <ul class="archive-details flex justify-start gap-6 sm:text-lg">
               <li><span class="text-zinc-400">Files: </span></li>
               <li><span class="text-zinc-400">Size: </span></li>
             </ul>
           </section>
           <section>
-            <h3 class="p-2 text-lg font-medium">Entries</h3>
+            <h3 class="p-2 text-lg font-medium sm:p-4 sm:text-xl">Entries</h3>
             <ul class="archive-entries"></ul>
           </section>
         </div>
@@ -90,7 +90,7 @@
 
     <!-- base template used as a parent of the more specialized entry templates -->
     <template id="t-archive-entry">
-      <li class="group border-t border-zinc-800 p-2 text-sm">
+      <li class="group border-t border-zinc-800 p-2 text-sm sm:p-4">
         <span class="flex gap-2 not-only:mb-1">
           <span class="grow wrap-anywhere">
             <a class="path font-mono hover:underline hover:*:text-inherit active:*:text-inherit"></a>
@@ -101,7 +101,7 @@
 
     <!-- display text contents -->
     <template id="t-archive-entry-text">
-      <article class="group rounded-sm border border-zinc-600">
+      <article class="group rounded-sm border border-zinc-600 sm:text-base">
         <header class="flex items-center gap-2 border-b border-zinc-600 p-2">
           <div class="h-min grow">
             <h4 class="mr-2 inline-block">Content</h4>
@@ -109,20 +109,23 @@
           </div>
           <button
             type="button"
-            class="flex-none rounded-sm border border-emerald-400 px-2 py-1 text-emerald-400 active:border-white active:bg-zinc-600 active:text-white"
+            class="flex-none rounded-sm border border-emerald-400 px-2 py-1 text-emerald-400 hover:border-white hover:text-white active:border-white active:bg-zinc-600 active:text-white"
           >
             Copy
           </button>
         </header>
-        <div class="max-h-52 overflow-scroll rounded-b-sm bg-zinc-800 p-2">
-          <pre class="font-mono whitespace-break-spaces tab-8 slashed-zero"></pre>
+        <div class="max-h-52 overflow-scroll rounded-b-sm bg-zinc-800 p-2 sm:max-h-100">
+          <pre class="font-mono text-sm whitespace-break-spaces tab-8 slashed-zero"></pre>
         </div>
       </article>
     </template>
 
     <!-- display button for extracting a nested archive -->
     <template id="t-archive-entry-extract">
-      <button type="button" class="flex-none text-emerald-400 active:text-white disabled:text-zinc-600">
+      <button
+        type="button"
+        class="flex-none text-emerald-400 hover:text-white active:text-white disabled:text-zinc-600"
+      >
         <span class="material-symbols-outlined block!">unarchive</span>
       </button>
     </template>
@@ -140,11 +143,11 @@
     <dialog
       id="archive-password-dialog"
       closedby="none"
-      class="fixed top-1/4 left-1/2 w-4/5 -translate-1/2 rounded-4xl bg-zinc-800 text-zinc-200 shadow-2xl/30 backdrop:bg-black/35"
+      class="fixed top-1/4 left-1/2 w-5/6 max-w-100 -translate-1/2 rounded-4xl bg-zinc-800 text-white shadow-2xl/30 backdrop:bg-black/35"
     >
-      <div class="p-8">
+      <div class="p-8 sm:text-lg">
         <header class="mb-4 text-center">
-          <h2 class="text-xl font-medium">Password required</h2>
+          <h2 class="text-xl font-medium sm:text-2xl">Password required</h2>
         </header>
         <form method="dialog">
           <div class="mb-2">
@@ -156,26 +159,26 @@
               value=""
               required
               autofocus
-              class="block w-full rounded-lg border border-zinc-600 p-1 font-mono outline-0 focus:border-white"
+              class="block w-full rounded-lg border border-zinc-600 p-1 font-mono outline-0 focus:ring-2 focus:ring-white"
             />
           </div>
           <div class="grid grid-cols-2 gap-2 text-center">
-            <button
-              type="submit"
-              value="confirm"
-              class="rounded-lg border border-emerald-400 px-2 py-1 text-emerald-400 active:border-white active:bg-zinc-600 active:text-white"
-            >
-              Confirm
-            </button>
             <button
               id="cancel"
               type="button"
               value="cancel"
               command="close"
               commandfor="archive-password-dialog"
-              class="rounded-lg border border-zinc-400 px-2 py-1 text-zinc-400 active:border-white active:bg-zinc-600 active:text-white"
+              class="rounded-lg border border-zinc-400 px-2 py-1 text-zinc-400 hover:border-white hover:text-white active:border-white active:bg-zinc-600 active:text-white"
             >
               Cancel
+            </button>
+            <button
+              type="submit"
+              value="confirm"
+              class="rounded-lg border border-emerald-400 px-2 py-1 text-emerald-400 hover:border-white hover:text-white active:border-white active:bg-zinc-600 active:text-white"
+            >
+              Confirm
             </button>
           </div>
         </form>
