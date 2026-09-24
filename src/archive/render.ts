@@ -115,13 +115,14 @@ export async function displayEntries(entries: EntryData[], info: DisplayInfo): P
     for (const { content, path } of entries) {
         const clone = templates.entry.clone();
         const container = clone.querySelector('li')!;
-        const pathContainer = clone.querySelector<HTMLAnchorElement>('.path')!;
+        const pathContainer = clone.querySelector('.path')!;
+        const downloadButton = clone.querySelector('a')!;
 
         const mimeType = content.type;
         const objUrl = URL.createObjectURL(content);
 
-        pathContainer.href = objUrl;
-        pathContainer.download = path.name;
+        downloadButton.href = objUrl;
+        downloadButton.download = path.name;
         displayPath(pathContainer, path);
 
         if (mimeType.startsWith('text')) {
@@ -143,7 +144,7 @@ export async function displayEntries(entries: EntryData[], info: DisplayInfo): P
             const node = templates.entryImage.clone();
             const img = node.querySelector('img')!;
             img.src = objUrl;
-            img.alt = path.name;
+            img.alt = `Contents of ${path}`;
             container.append(node);
         } else if (VIDEO_MIME_TYPES.has(mimeType)) {
             const node = templates.entryVideo.clone();
@@ -153,6 +154,7 @@ export async function displayEntries(entries: EntryData[], info: DisplayInfo): P
         } else if (mimeType === 'application/zip') {
             const node = templates.entryExtract.clone();
             const button = node.querySelector('button')!;
+            pathContainer.after(node);
             button.addEventListener('click', async () => {
                 try {
                     button.disabled = true;
@@ -175,7 +177,6 @@ export async function displayEntries(entries: EntryData[], info: DisplayInfo): P
                 }
                 button.remove();
             });
-            container.children[0].append(node);
         }
 
         entriesContainer.append(clone);
@@ -194,6 +195,5 @@ export async function displayEntries(entries: EntryData[], info: DisplayInfo): P
         viewContainer.append(archiveContainer);
     }
 
-    viewContainer.hidden = false;
     return archive;
 }

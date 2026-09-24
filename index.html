@@ -5,7 +5,7 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght@24,400&icon_names=unarchive&display=block"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght@24,400&icon_names=unarchive,download&display=block"
     />
     <link rel="stylesheet" href="/src/style.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -31,7 +31,7 @@
                 pattern="https?://.*"
                 placeholder="https://example.com/archive.zip"
                 required
-                class="grow rounded-l-lg border border-r-0 border-zinc-600 px-2 py-0.5 outline-0 placeholder:text-zinc-700 hover:not-focus:border-zinc-400 focus:border-emerald-400 disabled:text-zinc-600"
+                class="grow rounded-l-lg border border-r-0 border-zinc-600 px-2 py-0.5 outline-0 placeholder:text-zinc-600 hover:not-focus:border-zinc-400 focus:border-emerald-400 disabled:text-zinc-600"
               />
               <button
                 id="view-button"
@@ -67,7 +67,7 @@
 
     <!-- base template for viewing a single archive -->
     <template id="t-archive">
-      <section class="mt-6">
+      <article class="mt-6">
         <hgroup class="mb-1 px-2 text-center">
           <h2 class="text-xl font-medium underline underline-offset-4">Archive Contents</h2>
           <p class="archive-name text-sm wrap-break-word text-zinc-400 sm:text-base"></p>
@@ -85,27 +85,28 @@
             <ul class="archive-entries"></ul>
           </section>
         </div>
-      </section>
+      </article>
     </template>
 
     <!-- base template used as a parent of the more specialized entry templates -->
     <template id="t-archive-entry">
       <li class="group border-t border-zinc-800 p-2 text-sm sm:p-4">
-        <span class="flex gap-2 not-only:mb-1">
-          <span class="grow wrap-anywhere">
-            <a class="path font-mono hover:underline hover:*:text-inherit active:*:text-inherit"></a>
-          </span>
-        </span>
+        <div class="flex items-center gap-2 not-only:mb-1 sm:not-only:mb-2">
+          <h4 class="path pretty h-min grow pl-1 font-mono wrap-anywhere"></h4>
+          <a class="flex-none rounded-full p-1 text-zinc-400 hover:text-white active:bg-zinc-600">
+            <span class="material-symbols-outlined block!">download</span>
+          </a>
+        </div>
       </li>
     </template>
 
     <!-- display text contents -->
     <template id="t-archive-entry-text">
-      <article class="group rounded-sm border border-zinc-600 sm:text-base">
+      <article class="rounded-sm border border-zinc-600 sm:text-base">
         <header class="flex items-center gap-2 border-b border-zinc-600 p-2">
           <div class="h-min grow">
-            <h4 class="mr-2 inline-block">Content</h4>
-            <span class="lines text-zinc-400">0 lines</span>
+            <h5 class="mr-3 ml-1 inline-block">Content</h5>
+            <span class="lines text-sm text-zinc-400">0 lines</span>
           </div>
           <button
             type="button"
@@ -124,7 +125,7 @@
     <template id="t-archive-entry-extract">
       <button
         type="button"
-        class="flex-none text-emerald-400 hover:text-white active:text-white disabled:text-zinc-600"
+        class="flex-none cursor-pointer rounded-full p-1 text-emerald-400 hover:text-white active:bg-zinc-600 disabled:text-zinc-600"
       >
         <span class="material-symbols-outlined block!">unarchive</span>
       </button>
