@@ -1,5 +1,5 @@
 import { HttpReader } from '@zip.js/zip.js';
-import { getEntriesWithData, Path, type EntryData } from './entry';
+import { type EntryData, Path, getEntriesWithData } from './entry';
 
 // Image and video mime types commonly supported in browsers
 const IMAGE_MIME_TYPES = new Set([

@@ -1,9 +1,9 @@
 import {
     BlobWriter,
-    getMimeType,
-    ZipReader,
     type FileEntry,
     type HttpReader,
+    ZipReader,
+    getMimeType,
 } from '@zip.js/zip.js';
 import { requestPassword } from './password';
 
