@@ -89,23 +89,26 @@ form.addEventListener('submit', async (event) => {
         progress.hidden = true;
     }
 
+    // NOTE:
     // Avoid pushing consecutive repetitions of the same URL
-    // as it can be potentially confusing for navigation.
-    if (history.state?.href !== archiveUrl.href) {
-        const url = new URL(location.href);
-        url.searchParams.set('url', archiveUrl.href);
-        history.pushState({ href: archiveUrl.href }, '', url);
+    // since it can be confusing for navigation.
+    const url = archiveUrl.href;
+    if (history.state?.url !== url) {
+        const location = new URL(window.location.href);
+        location.searchParams.set('url', url);
+        history.pushState({ url }, '', location);
     }
 });
 
 window.addEventListener('popstate', (event) => {
-    input.value = event.state?.href ?? '';
+    input.value = event.state?.url ?? '';
 });
 
 {
-    const href = new URL(location.href);
-    const url = href.searchParams.get('url');
+    const location = new URL(window.location.href);
+    const url = location.searchParams.get('url');
     if (url) {
+        history.replaceState({ url }, '', location);
         input.value = url;
         button.click();
     }
