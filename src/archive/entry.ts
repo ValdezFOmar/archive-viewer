@@ -100,6 +100,7 @@ function naturalCompare(s1: string, s2: string): number {
 
 export interface EntryData {
     readonly path: Path;
+    readonly date: Date;
     readonly content: Blob;
 }
 
@@ -123,9 +124,10 @@ export async function getEntriesWithData(httpReader: HttpReader): Promise<EntryD
         }
         const promises = entries.map(async (entry) => {
             const path = new Path(entry.filename);
+            const date = entry.lastModDate;
             const mimeType = getMimeType(path.extension);
             const content = await entry.getData(new BlobWriter(mimeType), { password });
-            return { content, path };
+            return { content, path, date };
         });
         const entriesWithData = await Promise.all(promises);
         return entriesWithData;

@@ -19,6 +19,7 @@ const VIDEO_MIME_TYPES = new Set([
     'video/mp4',
     'video/mpeg',
     'video/ogg',
+    'video/quicktime',
     'video/webm',
     'video/x-matroska',
     'video/x-smvideo',
@@ -112,18 +113,28 @@ export async function displayEntries(entries: EntryData[], info: DisplayInfo): P
 
     entries.sort((a, b) => a.path.compare(b.path));
 
-    for (const { content, path } of entries) {
+    for (const { content, path, date } of entries) {
         const clone = templates.entry.clone();
         const container = clone.querySelector('li')!;
         const pathContainer = clone.querySelector('.path')!;
         const downloadButton = clone.querySelector('a')!;
+        const sizeContainer = clone.querySelector('.file-size')!;
+        const timeContainer = clone.querySelector('time')!;
+
+        displayPath(pathContainer, path);
+
+        sizeContainer.textContent = formatFileSize(content.size);
+        timeContainer.textContent = date.toLocaleDateString(undefined, {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric',
+        });
+        timeContainer.dateTime = date.toISOString();
 
         const mimeType = content.type;
         const objUrl = URL.createObjectURL(content);
-
         downloadButton.href = objUrl;
         downloadButton.download = path.name;
-        displayPath(pathContainer, path);
 
         if (mimeType.startsWith('text')) {
             const text = await content.text();
@@ -154,7 +165,7 @@ export async function displayEntries(entries: EntryData[], info: DisplayInfo): P
         } else if (mimeType === 'application/zip') {
             const node = templates.entryExtract.clone();
             const button = node.querySelector('button')!;
-            pathContainer.after(node);
+            downloadButton.before(button);
             button.addEventListener('click', async () => {
                 try {
                     button.disabled = true;

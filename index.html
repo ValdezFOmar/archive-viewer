@@ -91,8 +91,14 @@
     <!-- base template used as a parent of the more specialized entry templates -->
     <template id="t-archive-entry">
       <li class="group border-t border-zinc-800 p-2 text-sm sm:p-4">
-        <div class="flex items-center gap-2 not-only:mb-1 sm:not-only:mb-2">
-          <h4 class="path pretty h-min grow pl-1 font-mono wrap-anywhere"></h4>
+        <div class="flex items-center gap-2 not-only:mb-2">
+          <div class="h-min grow pl-0.5">
+            <h4 class="path pretty mb-0.5 font-mono wrap-anywhere"></h4>
+            <div class="text-xs text-zinc-400 sm:text-sm">
+              <time class="mr-2"></time>
+              <span class="file-size"></span>
+            </div>
+          </div>
           <a class="flex-none rounded-full p-1 text-zinc-400 hover:text-white active:bg-zinc-600">
             <span class="material-symbols-outlined block!">download</span>
           </a>
