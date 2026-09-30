@@ -1,6 +1,7 @@
 import { HttpReader } from '@zip.js/zip.js';
 import { getEntriesWithData } from './archive/entry';
 import { displayEntries } from './archive/render';
+import './style.css';
 
 // NOTE: Always consume the response, otherwise it could cause performance/memory problems.
 async function updateProgressBar(progress: HTMLProgressElement, response: Response) {
