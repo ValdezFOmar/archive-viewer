@@ -6,7 +6,7 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght@24,400&icon_names=unarchive,download&display=block"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght@24,400&icon_names=unarchive,download,file_open&display=block"
     />
     <title>Archive Viewer</title>
   </head>
@@ -20,9 +20,19 @@
       </header>
       <main class="grow">
         <section class="px-2">
-          <form id="view-form" class="flex flex-col justify-center sm:flex-row sm:items-center sm:gap-2">
-            <label for="url" class="block h-min text-center text-sm text-zinc-400 sm:text-base">Archive URL</label>
-            <div class="flex grow sm:w-3/4 sm:flex-none">
+          <h2 class="mb-0.5 text-center text-sm text-zinc-400">View file or URL</h2>
+          <form id="view-form" class="flex items-center gap-2">
+            <div class="flex-none">
+              <label
+                for="file-picker"
+                class="block w-full rounded-lg border border-emerald-400 p-1.5 text-emerald-400 select-none focus-within:border-white focus-within:bg-zinc-600 focus-within:text-white hover:border-white hover:text-white"
+              >
+                <span class="material-symbols-outlined block!">file_open</span>
+                <input id="file-picker" name="file" type="file" accept="application/zip" class="sr-only" />
+              </label>
+            </div>
+            <div class="grow">
+              <label for="url" class="sr-only">Archive URL</label>
               <input
                 type="text"
                 name="url"
@@ -30,22 +40,15 @@
                 pattern="https?://.*"
                 placeholder="https://example.com/archive.zip"
                 required
-                class="grow rounded-l-lg border border-r-0 border-zinc-600 px-2 py-0.5 outline-0 placeholder:text-zinc-600 hover:not-focus:border-zinc-400 focus:border-emerald-400 disabled:text-zinc-600"
+                class="w-full rounded-lg border border-zinc-600 px-2 py-1.5 outline-0 placeholder:text-zinc-600 hover:not-focus:border-zinc-400 focus:border-white disabled:opacity-50"
               />
-              <button
-                id="view-button"
-                form="view-form"
-                type="submit"
-                class="flex-none rounded-r-lg bg-emerald-400 p-1 text-zinc-900 hover:bg-white active:bg-white disabled:bg-zinc-600 disabled:text-white"
-              >
-                <span class="material-symbols-outlined block!">unarchive</span>
-              </button>
             </div>
+            <button id="view-button" form="view-form" type="submit" class="sr-only">View</button>
           </form>
           <progress
             hidden
-            max="10"
-            value="5"
+            max="1"
+            value="0"
             class="h-2 w-full rounded-full bg-zinc-600 accent-emerald-400 indeterminate:accent-amber-400"
           ></progress>
         </section>

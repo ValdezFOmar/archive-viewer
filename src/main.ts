@@ -1,4 +1,4 @@
-import { HttpReader } from '@zip.js/zip.js';
+import { BlobReader, HttpReader } from '@zip.js/zip.js';
 import { getEntriesWithData } from './archive/entry';
 import { displayEntries } from './archive/render';
 import './style.css';
@@ -46,6 +46,37 @@ function guessName(url: URL, headers?: Headers): string {
 const form = document.querySelector<HTMLFormElement>('#view-form')!;
 const input = document.querySelector<HTMLInputElement>('#url')!;
 const button = document.querySelector<HTMLButtonElement>('#view-button')!;
+const filePicker = document.querySelector<HTMLInputElement>('#file-picker')!;
+const view = document.querySelector<HTMLElement>('#archive-view')!;
+
+filePicker.addEventListener('change', async () => {
+    if (filePicker.files?.length !== 1) {
+        return;
+    }
+    const file = filePicker.files[0];
+    try {
+        view.style.opacity = '50%';
+        input.disabled = true;
+        button.disabled = true;
+        filePicker.disabled = true;
+
+        const entries = await getEntriesWithData(new BlobReader(file));
+        if (!entries) {
+            return;
+        }
+        const { name, size } = file;
+        await displayEntries(entries, { name, size, replace: true });
+    } catch (error) {
+        alert(`Error while processing archive:\n${error}`);
+        console.error(error);
+        return;
+    } finally {
+        view.removeAttribute('style');
+        input.disabled = false;
+        button.disabled = false;
+        filePicker.disabled = false;
+    }
+});
 
 form.addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -66,6 +97,7 @@ form.addEventListener('submit', async (event) => {
     });
 
     try {
+        view.style.opacity = '50%';
         input.disabled = true;
         button.disabled = true;
         progress.max = 1;
@@ -83,6 +115,7 @@ form.addEventListener('submit', async (event) => {
         console.error(error);
         return;
     } finally {
+        view.removeAttribute('style');
         input.disabled = false;
         button.disabled = false;
         progress.max = 1;

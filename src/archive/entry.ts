@@ -1,10 +1,4 @@
-import {
-    BlobWriter,
-    type FileEntry,
-    type HttpReader,
-    ZipReader,
-    getMimeType,
-} from '@zip.js/zip.js';
+import { BlobWriter, type FileEntry, Reader, ZipReader, getMimeType } from '@zip.js/zip.js';
 import { requestPassword } from './password';
 
 export class Path {
@@ -104,8 +98,8 @@ export interface EntryData {
     readonly content: Blob;
 }
 
-export async function getEntriesWithData(httpReader: HttpReader): Promise<EntryData[] | undefined> {
-    const zipReader = new ZipReader(httpReader);
+export async function getEntriesWithData<T>(reader: Reader<T>): Promise<EntryData[] | undefined> {
+    const zipReader = new ZipReader(reader);
     try {
         const entries: FileEntry[] = [];
         for await (const entry of zipReader.getEntriesGenerator()) {
