@@ -11,12 +11,10 @@
     <title>Archive Viewer</title>
   </head>
 
-  <body>
+  <body class="selection:bg-emerald-400/60 selection:text-white">
     <div class="mx-auto flex min-h-dvh max-w-180 grow flex-col">
       <header class="flex-none py-3 sm:py-6">
-        <h1 class="text-center font-mono text-2xl font-bold text-emerald-400 sm:text-3xl">
-          <a href="%BASE_URL%">Archive Viewer</a>
-        </h1>
+        <h1 class="text-center font-mono text-2xl font-bold text-emerald-400 sm:text-3xl">Archive Viewer</h1>
       </header>
       <main class="grow">
         <section class="px-2">
@@ -101,7 +99,9 @@
               <span class="file-size"></span>
             </div>
           </div>
-          <a class="flex-none rounded-full p-1 text-zinc-400 hover:text-white focus:bg-zinc-600 focus:text-white">
+          <a
+            class="flex-none rounded-full p-1 text-zinc-400 select-none hover:text-white focus:bg-zinc-600 focus:text-white"
+          >
             <span class="material-symbols-outlined block!">download</span>
           </a>
         </div>
@@ -118,7 +118,7 @@
           </div>
           <button
             type="button"
-            class="flex-none rounded-sm border border-emerald-400 px-2 py-1 text-emerald-400 hover:border-white hover:text-white focus:border-white focus:bg-zinc-600 focus:text-white"
+            class="flex-none rounded-sm border border-emerald-400 px-2 py-1 text-emerald-400 select-none hover:border-white hover:text-white focus:border-white focus:bg-zinc-600 focus:text-white"
           >
             Copy
           </button>
