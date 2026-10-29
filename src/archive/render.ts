@@ -82,15 +82,13 @@ function countLines(text: string): number {
 }
 
 function displayPath(container: Element, path: Path): void {
-    // 'Zero Width Space' to mark possible line breaks.
-    const zws = '\u{200B}';
     if (path.prefix !== '') {
         const span = document.createElement('span');
         span.classList.add('text-zinc-400');
-        span.append(path.prefix.replaceAll('_', zws + '_' + zws));
+        span.append(path.prefix);
         container.append(span);
     }
-    container.append(path.name.replaceAll('_', zws + '_' + zws));
+    container.append(path.name);
 }
 
 interface DisplayInfo {

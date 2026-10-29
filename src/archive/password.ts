@@ -9,11 +9,11 @@ const dialogInput = dialog.querySelector('input')!;
  * Returns `undefined` if the user cancels or dismisses the dialog.
  */
 async function showDialog(message: string): Promise<string | undefined> {
-    dialogLabel.textContent = message;
-    dialogInput.value = '';
-    dialog.returnValue = '';
-    dialog.showModal();
     return new Promise((resolve) => {
+        dialogLabel.textContent = message;
+        dialogInput.value = '';
+        dialog.returnValue = '';
+        dialog.showModal();
         const onClose = () => {
             const password = dialog.returnValue === 'confirm' ? dialogInput.value : undefined;
             resolve(password);

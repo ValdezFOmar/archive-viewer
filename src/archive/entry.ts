@@ -103,7 +103,7 @@ export async function getEntriesWithData<T>(reader: Reader<T>): Promise<EntryDat
     try {
         const entries: FileEntry[] = [];
         for await (const entry of zipReader.getEntriesGenerator()) {
-            if (!entry.directory) {
+            if (!entry.directory && !entry.filename.includes('__MACOSX')) {
                 entries.push(entry);
             }
         }
