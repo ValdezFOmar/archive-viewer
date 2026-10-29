@@ -98,6 +98,13 @@ interface DisplayInfo {
 }
 
 const viewContainer = document.getElementById('archive-view')!;
+const dateTimeFormat = new Intl.DateTimeFormat(undefined, {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+});
 
 export async function displayEntries(entries: EntryData[], info: DisplayInfo): Promise<Element> {
     const archiveContainer = templates.archive.clone();
@@ -122,11 +129,7 @@ export async function displayEntries(entries: EntryData[], info: DisplayInfo): P
         displayPath(pathContainer, path);
 
         sizeContainer.textContent = formatFileSize(content.size);
-        timeContainer.textContent = date.toLocaleDateString(undefined, {
-            day: 'numeric',
-            month: 'short',
-            year: 'numeric',
-        });
+        timeContainer.textContent = dateTimeFormat.format(date);
         timeContainer.dateTime = date.toISOString();
 
         const mimeType = content.type;

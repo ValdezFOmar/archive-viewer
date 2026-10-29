@@ -100,6 +100,7 @@ form.addEventListener('submit', async (event) => {
         view.style.opacity = '50%';
         input.disabled = true;
         button.disabled = true;
+        filePicker.disabled = true;
         progress.max = 1;
         progress.value = 0;
         progress.hidden = false;
@@ -118,6 +119,7 @@ form.addEventListener('submit', async (event) => {
         view.removeAttribute('style');
         input.disabled = false;
         button.disabled = false;
+        filePicker.disabled = false;
         progress.max = 1;
         progress.value = 0;
         progress.hidden = true;

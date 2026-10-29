@@ -23,7 +23,7 @@
             <div class="flex-none">
               <label
                 for="file-picker"
-                class="block w-full rounded-lg border border-emerald-400 p-1.5 text-emerald-400 select-none focus-within:border-white focus-within:bg-zinc-600 focus-within:text-white hover:border-white hover:text-white"
+                class="block w-full rounded-lg border border-emerald-400 p-1.5 text-emerald-400 select-none focus-within:border-white focus-within:bg-zinc-600 focus-within:text-white hover:border-white hover:text-white has-disabled:opacity-50"
               >
                 <span class="material-symbols-outlined block!">file_open</span>
                 <input id="file-picker" name="file" type="file" accept="application/zip" class="sr-only" />
@@ -91,11 +91,11 @@
     <!-- base template used as a parent of the more specialized entry templates -->
     <template id="t-archive-entry">
       <li class="group border-t border-zinc-800 p-2 text-sm sm:p-4">
-        <div class="flex items-center gap-2 not-only:mb-2">
+        <div class="flex items-center gap-2 not-only:mb-2 sm:not-only:mb-4">
           <div class="h-min grow pl-0.5">
-            <h4 class="path pretty mb-0.5 font-mono wrap-anywhere"></h4>
-            <div class="text-xs text-zinc-400 sm:text-sm">
-              <time class="mr-2"></time>
+            <h4 class="path pretty mb-0.5 font-mono wrap-anywhere sm:text-base"></h4>
+            <div class="flex gap-3 text-xs text-zinc-400 sm:text-sm">
+              <time></time>
               <span class="file-size"></span>
             </div>
           </div>
