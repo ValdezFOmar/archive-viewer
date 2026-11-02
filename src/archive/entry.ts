@@ -99,7 +99,7 @@ export interface EntryData {
 }
 
 export async function getEntriesWithData<T>(reader: Reader<T>): Promise<EntryData[] | undefined> {
-    const zipReader = new ZipReader(reader);
+    const zipReader = new ZipReader(reader, { filenameEncoding: 'utf-8' });
     try {
         const entries: FileEntry[] = [];
         for await (const entry of zipReader.getEntriesGenerator()) {

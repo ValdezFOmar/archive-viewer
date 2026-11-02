@@ -163,7 +163,7 @@ export async function displayEntries(entries: EntryData[], info: DisplayInfo): P
             const video = node.querySelector('video')!;
             video.src = objUrl;
             container.append(node);
-        } else if (mimeType === 'application/zip') {
+        } else if (mimeType === 'application/zip' || mimeType === 'application/x-cbz') {
             const node = templates.entryExtract.clone();
             const button = node.querySelector('button')!;
             downloadButton.before(button);
