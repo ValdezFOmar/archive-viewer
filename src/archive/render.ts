@@ -91,6 +91,29 @@ function displayPath(container: Element, path: Path): void {
     container.append(path.name);
 }
 
+const defaultDateFormat = new Intl.DateTimeFormat(undefined, {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+});
+const noYearDateFormat = new Intl.DateTimeFormat(undefined, {
+    day: 'numeric',
+    month: 'short',
+    hour: 'numeric',
+    minute: 'numeric',
+});
+
+function formatDateTime(date: Date): string {
+    const now = new Date(Date.now());
+    if (date.getFullYear() === now.getFullYear()) {
+        return noYearDateFormat.format(date);
+    } else {
+        return defaultDateFormat.format(date);
+    }
+}
+
 interface DisplayInfo {
     readonly size: number;
     readonly name: string;
@@ -98,13 +121,6 @@ interface DisplayInfo {
 }
 
 const viewContainer = document.getElementById('archive-view')!;
-const dateTimeFormat = new Intl.DateTimeFormat(undefined, {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-    hour: 'numeric',
-    minute: 'numeric',
-});
 
 export async function displayEntries(entries: EntryData[], info: DisplayInfo): Promise<Element> {
     const archiveContainer = templates.archive.clone();
@@ -129,7 +145,7 @@ export async function displayEntries(entries: EntryData[], info: DisplayInfo): P
         displayPath(pathContainer, path);
 
         sizeContainer.textContent = formatFileSize(content.size);
-        timeContainer.textContent = dateTimeFormat.format(date);
+        timeContainer.textContent = formatDateTime(date);
         timeContainer.dateTime = date.toISOString();
 
         const mimeType = content.type;
