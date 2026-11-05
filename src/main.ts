@@ -3,6 +3,26 @@ import { getEntriesWithData } from './archive/entry';
 import { displayEntries } from './archive/render';
 import './style.css';
 
+// Show/hide 'scroll to top' button
+window.addEventListener('scroll', () => {
+    const button = document.getElementById('top-btn')!;
+    if (button.hidden) {
+        const viewportHeight = window.innerHeight;
+        const documentHeight = document.documentElement.scrollHeight;
+        const isDocumentTallEnough = documentHeight > viewportHeight * 2;
+        const hasScrolledFarEnough = window.scrollY > viewportHeight * 0.5;
+        button.hidden = !(isDocumentTallEnough && hasScrolledFarEnough);
+    } else if (window.scrollY === 0) {
+        const listener = () => {
+            button.hidden = true;
+            button.classList.replace('opacity-0', 'opacity-100');
+            button.removeEventListener('transitionend', listener);
+        };
+        button.addEventListener('transitionend', listener);
+        button.classList.replace('opacity-100', 'opacity-0');
+    }
+});
+
 // NOTE: Always consume the response, otherwise it could cause performance/memory problems.
 async function updateProgressBar(progress: HTMLProgressElement, response: Response) {
     if (response.body) {

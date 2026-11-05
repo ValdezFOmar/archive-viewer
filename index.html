@@ -6,7 +6,7 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght@24,400&icon_names=unarchive,download,file_open&display=block"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght@24,400&icon_names=unarchive,download,file_open,keyboard_arrow_up&display=block"
     />
     <title>Archive Viewer</title>
   </head>
@@ -148,6 +148,15 @@
     <template id="t-archive-entry-video">
       <video controls class="object-contain"></video>
     </template>
+
+    <a
+      id="top-btn"
+      href="#"
+      hidden
+      class="fixed right-4 bottom-8 rounded-full bg-emerald-400/80 p-4 opacity-100 shadow transition-opacity duration-300 text-shadow-md md:right-8 starting:opacity-0"
+    >
+      <span class="material-symbols-outlined block!" translate="no">keyboard_arrow_up</span>
+    </a>
 
     <dialog
       id="archive-password-dialog"
