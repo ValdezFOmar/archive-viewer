@@ -10,7 +10,7 @@ window.addEventListener('scroll', () => {
         const viewportHeight = window.innerHeight;
         const documentHeight = document.documentElement.scrollHeight;
         const isDocumentTallEnough = documentHeight > viewportHeight * 2;
-        const hasScrolledFarEnough = window.scrollY > viewportHeight * 0.5;
+        const hasScrolledFarEnough = window.scrollY > viewportHeight * 0.75;
         button.hidden = !(isDocumentTallEnough && hasScrolledFarEnough);
     } else if (window.scrollY === 0) {
         const listener = () => {
