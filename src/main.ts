@@ -1,4 +1,5 @@
 import { BlobReader, HttpReader } from '@zip.js/zip.js';
+import { parse } from 'content-disposition';
 import { getEntriesWithData } from './archive/entry';
 import { displayEntries } from './archive/render';
 import './style.css';
@@ -52,15 +53,17 @@ async function updateProgressBar(progress: HTMLProgressElement, response: Respon
 function guessName(url: URL, headers?: Headers): string {
     const contentDisposition = headers?.get('Content-Disposition');
     if (contentDisposition) {
-        const parts = contentDisposition.split(/\s*;\s*/);
-        const param = parts.find((part) => part.startsWith('filename='));
-        if (param) {
-            const [_, filename] = param.trim().split('=');
-            const match = /"([^"]|\\.)+"/.exec(filename);
-            return match?.[1] || filename;
+        const { filename } = parse(contentDisposition).parameters;
+        if (filename) {
+            return filename;
         }
     }
-    return url.searchParams.get('f') || url.pathname.split('/').pop() || url.href;
+    const param = url.searchParams.get('f');
+    if (param) {
+        return param;
+    }
+    const component = url.pathname.split('/').at(-1);
+    return component ? decodeURIComponent(component) : url.href;
 }
 
 const form = document.querySelector<HTMLFormElement>('#view-form')!;

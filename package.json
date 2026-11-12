@@ -26,6 +26,7 @@
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",
     "@zip.js/zip.js": "^2.9.0",
+    "content-disposition": "^3.0.0",
     "tailwindcss": "^4.3.3"
   },
   "prettier": {
