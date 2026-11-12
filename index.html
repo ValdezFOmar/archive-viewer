@@ -6,7 +6,7 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght@24,400&icon_names=unarchive,download,file_open,keyboard_arrow_up&display=block"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght@24,400&icon_names=unarchive,download,file_open,keyboard_arrow_up,edit_square&display=block"
     />
     <title>Archive Viewer</title>
   </head>
@@ -31,15 +31,26 @@
             </div>
             <div class="grow">
               <label for="url" class="sr-only">Archive URL</label>
-              <input
-                type="text"
-                name="url"
-                id="url"
-                pattern="https?://.*"
-                placeholder="https://example.com/archive.zip"
-                required
-                class="w-full rounded-lg border border-zinc-600 px-2 py-1.5 outline-0 transition-colors placeholder:text-zinc-600 hover:not-focus:border-zinc-400 focus:border-white disabled:opacity-50"
-              />
+              <div
+                class="flex gap-1.5 rounded-lg border border-zinc-600 p-1.5 transition-colors focus-within:border-white hover:not-focus-within:border-zinc-400 has-disabled:opacity-50"
+              >
+                <input
+                  type="text"
+                  name="url"
+                  id="url"
+                  pattern="https?://.*"
+                  placeholder="https://example.com/archive.zip"
+                  required
+                  class="peer grow outline-0 placeholder:text-zinc-600"
+                />
+                <button
+                  id="focus-input"
+                  type="button"
+                  class="flex-none text-zinc-600 select-none peer-focus:hidden hover:text-zinc-400 focus:text-white"
+                >
+                  <span class="material-symbols-outlined block!" translate="no">edit_square</span>
+                </button>
+              </div>
             </div>
             <button id="view-button" form="view-form" type="submit" class="sr-only">View</button>
           </form>
@@ -140,12 +151,12 @@
 
     <!-- display image contents -->
     <template id="t-archive-entry-image">
-      <img class="w-full object-contain" />
+      <img class="w-full border border-zinc-800 object-contain" />
     </template>
 
     <!-- display video player -->
     <template id="t-archive-entry-video">
-      <video controls class="w-full object-contain"></video>
+      <video controls class="w-full border border-zinc-800 object-contain"></video>
     </template>
 
     <a

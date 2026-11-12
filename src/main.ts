@@ -69,6 +69,11 @@ const button = document.querySelector<HTMLButtonElement>('#view-button')!;
 const filePicker = document.querySelector<HTMLInputElement>('#file-picker')!;
 const view = document.querySelector<HTMLElement>('#archive-view')!;
 
+document.getElementById('focus-input')?.addEventListener('click', () => {
+    input.select();
+    input.focus();
+});
+
 filePicker.addEventListener('change', async () => {
     if (filePicker.files?.length !== 1) {
         return;
