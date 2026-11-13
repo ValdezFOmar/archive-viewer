@@ -15,19 +15,19 @@
     "@tailwindcss/language-server": "^0.16.0",
     "@trivago/prettier-plugin-sort-imports": "^6.0.2",
     "@typescript/lib-dom": "npm:@types/web",
-    "eslint": "^10.11.0",
-    "globals": "^17.12.0",
-    "prettier": "^3.9.6",
+    "eslint": "^10.14.0",
+    "globals": "^17.14.0",
+    "prettier": "^3.10.1",
     "prettier-plugin-tailwindcss": "^0.8.1",
     "typescript": "~6.0.2",
-    "typescript-eslint": "^8.70.0",
-    "vite": "^8.2.2"
+    "typescript-eslint": "^8.72.2",
+    "vite": "^8.3.8"
   },
   "dependencies": {
-    "@tailwindcss/vite": "^4.3.3",
-    "@zip.js/zip.js": "^2.9.0",
+    "@tailwindcss/vite": "^4.3.5",
+    "@zip.js/zip.js": "^2.24.0",
     "content-disposition": "^3.0.0",
-    "tailwindcss": "^4.3.3"
+    "tailwindcss": "^4.3.5"
   },
   "prettier": {
     "printWidth": 100,
