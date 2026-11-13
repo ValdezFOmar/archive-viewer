@@ -129,7 +129,7 @@ export async function displayEntries(entries: EntryData[], info: DisplayInfo): P
     const nameContainer = archiveContainer.querySelector('.archive-name')!;
 
     nameContainer.textContent = info.name;
-    detailsContainer.children[0].append(entries.length.toString());
+    detailsContainer.children[0].append(`${entries.length} File${entries.length === 1 ? '' : 's'}`);
     detailsContainer.children[1].append(formatFileSize(info.size));
 
     entries.sort((a, b) => a.path.compare(b.path));
