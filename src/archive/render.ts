@@ -195,7 +195,7 @@ export async function displayEntries(entries: EntryData[], info: DisplayInfo): P
                         size: httpReader.size,
                         name: path.name,
                     });
-                    container.scrollIntoView({ behavior: 'smooth' });
+                    container.scrollIntoView();
                 } catch (error) {
                     alert(`Error while processing archive "${path.name}":\n${error}`);
                     console.error(error);

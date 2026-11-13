@@ -4,9 +4,12 @@ import { getEntriesWithData } from './archive/entry';
 import { displayEntries } from './archive/render';
 import './style.css';
 
+const scrollTopButton = document.getElementById('scroll-top')!;
+scrollTopButton.addEventListener('click', () => window.scroll({ top: 0 }));
+
 // Show/hide 'scroll to top' button
 window.addEventListener('scroll', () => {
-    const button = document.getElementById('top-btn')!;
+    const button = scrollTopButton;
     if (button.hidden) {
         const viewportHeight = window.innerHeight;
         const documentHeight = document.documentElement.scrollHeight;
@@ -83,7 +86,7 @@ filePicker.addEventListener('change', async () => {
     }
     const file = filePicker.files[0];
     try {
-        view.style.opacity = '50%';
+        view.inert = true;
         input.disabled = true;
         button.disabled = true;
         filePicker.disabled = true;
@@ -99,7 +102,7 @@ filePicker.addEventListener('change', async () => {
         console.error(error);
         return;
     } finally {
-        view.removeAttribute('style');
+        view.inert = false;
         input.disabled = false;
         button.disabled = false;
         filePicker.disabled = false;
@@ -125,13 +128,13 @@ form.addEventListener('submit', async (event) => {
     });
 
     try {
-        view.style.opacity = '50%';
+        view.inert = true;
         input.disabled = true;
         button.disabled = true;
         filePicker.disabled = true;
         progress.max = 1;
         progress.value = 0;
-        progress.hidden = false;
+        progress.classList.remove('invisible');
 
         const entries = await getEntriesWithData(httpReader);
         if (!entries) {
@@ -144,13 +147,13 @@ form.addEventListener('submit', async (event) => {
         console.error(error);
         return;
     } finally {
-        view.removeAttribute('style');
+        view.inert = false;
         input.disabled = false;
         button.disabled = false;
         filePicker.disabled = false;
         progress.max = 1;
         progress.value = 0;
-        progress.hidden = true;
+        progress.classList.add('invisible');
     }
 
     // NOTE:
